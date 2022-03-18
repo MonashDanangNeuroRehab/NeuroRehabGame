@@ -4,10 +4,7 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - TF
-  - MenuPanel
-  - HandMenus
-  - TFArrow
+  - Target
   layers:
   - Default
   - TransparentFX
@@ -40,7 +37,7 @@ TagManager:
   - 
   - 
   - 
-  - Spatial Awareness
+  - 
   m_SortingLayers:
   - name: Default
     uniqueID: 0
