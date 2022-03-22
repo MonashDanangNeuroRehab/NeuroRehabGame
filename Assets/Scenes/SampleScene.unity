@@ -147,19 +147,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 595866804}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 70b347bf0a531034bad3634228b6d1f6, type: 3}
+  m_Script: {fileID: 11500000, guid: 4bca2d038dba2854ab810f361de12bb3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   mouseClick:
     m_Name: Mouse Click
     m_Type: 0
     m_ExpectedControlType: 
-    m_Id: abff66c4-1984-4512-9cdf-8582a2a372ee
+    m_Id: 0b147ed6-d5bf-41d1-9028-39723d52c13b
     m_Processors: 
     m_Interactions: 
     m_SingletonActionBindings:
     - m_Name: 
-      m_Id: 865f56ed-d3e4-4401-8bcc-341e72d8d204
+      m_Id: bd5c9578-0785-4d10-a6c2-2033fc0dd7f7
       m_Path: <Mouse>/leftButton
       m_Interactions: 
       m_Processors: 
@@ -167,8 +167,9 @@ MonoBehaviour:
       m_Action: Mouse Click
       m_Flags: 0
     m_Flags: 0
-  mouseDragPhysicsSpeed: 0.05
-  mouseDragSpeed: 0.05
+  mouseDragPhysicsSpeed: 10
+  mouseDragSpeed: 0.1
+  GameBall: {fileID: 0}
 --- !u!4 &595866806
 Transform:
   m_ObjectHideFlags: 0
@@ -372,7 +373,7 @@ GameObject:
   - component: {fileID: 2001009788}
   m_Layer: 0
   m_Name: Cube
-  m_TagString: Untagged
+  m_TagString: Ball
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
