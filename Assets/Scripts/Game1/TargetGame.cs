@@ -10,7 +10,7 @@ public class TargetGame : MonoBehaviour
     public bool TargetReached = false;
     // List of Color displayed on the target
     private Color[] ColorList = { Color.red, Color.blue, Color.green, Color.magenta, Color.yellow, Color.cyan };
-    private WaitForSeconds updateInterval = new WaitForSeconds(0.5f);
+    private WaitForFixedUpdate updateInterval = new WaitForFixedUpdate();
     private bool GameWon = false;
     private TMP_Text GameNotif;
     private int nextGoalIndex = 0;
@@ -22,17 +22,19 @@ public class TargetGame : MonoBehaviour
     {
         TargetList = GameObject.FindGameObjectsWithTag("Target");
         GameNotif = GameObject.Find("GameNotif").GetComponent<TextMeshPro>();
-        GameGoal = GameObject.Find("Goal");
         // Shuffle the list at the start
         ShuffleColorList();
         // Assign random color
         for (int i = 0; i < ColorList.Length; i++)
         {
+            Debug.Log(TargetList[i].name);
+            Debug.Log(ColorList[i]);
             TargetList[i].GetComponent<Renderer>().material.color = ColorList[i];
         }
         // Shuffle once again to assign a random goal
         ShuffleColorList();
         GameGoal.GetComponent<Renderer>().material.color = ColorList[nextGoalIndex];
+        StartCoroutine(CheckEndGameCondition());
     }
     // Color List Shuffle
     private void ShuffleColorList()
@@ -50,31 +52,25 @@ public class TargetGame : MonoBehaviour
     {
        while(!GameWon)
        {
-            if (TargetReached && gameState == 0)
-            {
-                GameNotif.text = "Please move back to the starting position";
-                GameGoal.SetActive(false);
-                gameState = 1;
-            }
-            else if (gameState == 1)
+            if (TargetReached)
             {
                 TargetReached = false;
-                GameNotif.text = "Can you reach this target?";
-                GameGoal.SetActive(true);
                 nextGoalIndex++;
                 if (nextGoalIndex >= TargetList.Length)
                 {
                     nextGoalIndex = 0;
                     GameWon = true;
+                    
                 }
                 else
                 {
+                    Debug.Log(nextGoalIndex);
                     GameGoal.GetComponent<Renderer>().material.color = ColorList[nextGoalIndex];
                 }
-                gameState = 0;
             }
             if (GameWon)
             {
+                GameGoal.SetActive(false);
                 GameNotif.text = "Congrats! You have completed the game";
             }
             yield return updateInterval;

@@ -6,22 +6,20 @@ public class TargetLogic : MonoBehaviour
 {
     private TargetGame GameManager;
     private GameObject GameGoal;
-    private Color GoalColor;
-    private Color myColor;
-    // Start is called before the first frame update
-    void Start()
+    [SerializeField]
+    private GameObject Target;
+    [SerializeField]
+    private void Start()
     {
         GameManager = GameObject.Find("GameManager").GetComponent<TargetGame>();
         GameGoal = GameObject.Find("GameGoal");
-        GoalColor = GameGoal.GetComponent<Renderer>().material.color;
-        myColor = gameObject.GetComponent<Renderer>().material.color;
-        
+        Target = gameObject.transform.parent.gameObject;
     }
     private void OnTriggerEnter(Collider other)
     {
-        if (myColor == GoalColor)
+        if (Target.GetComponent<Renderer>().material.color == GameGoal.GetComponent<Renderer>().material.color && GameManager.TargetReached is false)
         {
-            gameObject.SetActive(false);
+            Debug.Log("Target Reached");
             GameManager.TargetReached = true;
         }
     }
