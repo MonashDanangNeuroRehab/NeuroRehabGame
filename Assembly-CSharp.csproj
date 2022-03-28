@@ -69,6 +69,7 @@
     <Compile Include="Assets\Scripts\Game1\TargetLogic.cs" />
     <Compile Include="Assets\Scripts\Player.cs" />
     <Compile Include="Assets\Scripts\SceneManager.cs" />
+    <Compile Include="Assets\Scripts\Utilities\WorldSpaceVideo.cs" />
     <Compile Include="Assets\ThirdParty\Ultraleap\Tracking\Examples\Core Examples\Example Assets\InertiaPostProcessProvider.cs" />
     <Compile Include="Assets\ThirdParty\Ultraleap\Tracking\Examples\Core Examples\Example Assets\ProjectionPostProcessProvider.cs" />
     <Compile Include="Assets\ThirdParty\Ultraleap\Tracking\Examples\Example Assets\Scripts\EditorURL.cs" />
