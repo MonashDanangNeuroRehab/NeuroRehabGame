@@ -37,8 +37,8 @@ public class WorldSpaceVideo : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        // videoPlayer.targetTexture.Release();
-        // videoPlayer.clip = videoClips[0];
+        videoPlayer.targetTexture.Release();
+        videoPlayer.clip = videoClips[0];
         mainCamera = Camera.main;
         Ray ray = mainCamera.ScreenPointToRay(new Vector2(Screen.width / 2, Screen.height / 2));
         RaycastHit hit;

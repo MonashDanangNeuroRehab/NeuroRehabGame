@@ -2,7 +2,7 @@
 
 ## Requirements
 
-- Unity 2019.4.4f1
+- Unity 2020.3.33f1
     - Make sure Universal Windows Platform is selected during installation
 - Visual Studio 2019
     - Make sure the following are selected:
@@ -13,8 +13,11 @@
 
 ## Included
 
-- UltraLEAP
+- Ultraleap Tracking
+- Ultraleap Tracking Preview
 - TextMeshPro
+- Probuilder
+- InputSystem
 
 ## What is happening now?
 Implementing a few games with Hand Motion Capture

@@ -1,14 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using NeuroRehab;
 
 public class Player : MonoBehaviour
 {
-    private Transform RefFrame;
-    private Transform Arm;
-    private Transform LeftHand;
-    private Transform RightHand;
-    private const int NUM_FINGER = 5;
+    public List<NeuroRehab.Hand> handList = new List<Hand>();
+
     // Start is called before the first frame update
     void Start()
     {
