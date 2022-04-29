@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using Leap.Unity.Examples;
 
 public class TargetGame : MonoBehaviour
 {
@@ -17,6 +18,9 @@ public class TargetGame : MonoBehaviour
     public int gameState = 0;
     public const int REACH_TARGET = 0;
     public const int BACK_OFF = 1;
+    [SerializeField]
+    private GameObject GameUI;
+    
     // Start is called before the first frame update
     void Start()
     {
@@ -27,8 +31,8 @@ public class TargetGame : MonoBehaviour
         // Assign random color
         for (int i = 0; i < ColorList.Length; i++)
         {
-            Debug.Log(TargetList[i].name);
-            Debug.Log(ColorList[i]);
+            // Debug.Log(TargetList[i].name);
+            // Debug.Log(ColorList[i]);
             TargetList[i].GetComponent<Renderer>().material.color = ColorList[i];
         }
         // Shuffle once again to assign a random goal

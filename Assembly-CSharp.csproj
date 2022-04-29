@@ -56,18 +56,57 @@
     <Analyzer Include="C:\Program Files (x86)\Microsoft Visual Studio Tools for Unity\16.0\Analyzers\Microsoft.Unity.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Samples\Ultraleap Tracking\5.7.0\Examples\Interaction Engine Examples\3. Interaction Callbacks\Scripts\TransformHandle.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking\5.7.0\Examples\Example Assets\Scripts\EditorURL.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking\5.7.0\Examples\Hands Examples\Scripts\CycleHandPairs.cs" />
     <Compile Include="Assets\Scripts\Player\Hand.cs" />
+    <Compile Include="Assets\Scripts\FeedbackGame\RehabMiniGame3.cs" />
+    <Compile Include="Assets\Scripts\FeedbackGame\RehabMiniGame2.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking\5.7.0\Examples\Interaction Engine Examples\7. Moving Reference Frames\Scripts\Spaceship.cs" />
     <Compile Include="Assets\Scripts\FeedbackGame\FeedbackGameManager.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking\5.7.0\Examples\Interaction Engine Examples\7. Moving Reference Frames\Scripts\AngularSpeedTextBehaviour.cs" />
     <Compile Include="Assets\Scripts\Player.cs" />
-    <Compile Include="Assets\Scripts\Utilities\ScoreDisplay.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking\5.7.0\Examples\Interaction Engine Examples\5. Anchors\SimpleAnchorFeedback.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking\5.7.0\Examples\Interaction Engine Examples\3. Interaction Callbacks\Scripts\TransformRotationHandle.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking\5.7.0\Examples\Interaction Engine Examples\7. Moving Reference Frames\Scripts\AutopilotSystem.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking\5.7.0\Examples\Interaction Engine Examples\3. Interaction Callbacks\Scripts\TransformTranslationHandle.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking\5.7.0\Examples\Core Examples\Example Assets\InertiaPostProcessProvider.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking\5.7.0\Examples\Hands Examples\Hands (HDRP)\Outline\Outline.cs" />
     <Compile Include="Assets\Scripts\SceneManager.cs" />
     <Compile Include="Assets\Scripts\Game1\TargetLogic.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking\5.7.0\Examples\Interaction Engine Examples\Common Example Assets\Scripts\SimpleInteractionGlow.cs" />
     <Compile Include="Assets\Scripts\Player\Finger.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking\5.7.0\Examples\Interaction Engine Examples\3. Interaction Callbacks\Scripts\TransformTool.cs" />
     <Compile Include="Assets\Scripts\Utilities\WorldSpaceVideo.cs" />
     <Compile Include="Assets\Scripts\Game1\TargetGame.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking\5.7.0\Examples\Interaction Engine Examples\Common Example Assets\Scripts\SimpleTransformUtil.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking\5.7.0\Examples\Interaction Engine Examples\8. Swap Grasp\Scripts\SwapGraspExample.cs" />
+    <Compile Include="Assets\Scripts\FeedbackGame\RehabMiniGame4.cs" />
     <Compile Include="Assets\Scripts\Player\Arm.cs" />
+    <Compile Include="Assets\Scripts\Utilities\TestScript.cs" />
+    <Compile Include="Assets\Scripts\FeedbackGame\RehabMiniGame1.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking\5.7.0\Examples\Interaction Engine Examples\6. Dynamic UI\Scripts\WorkstationBehaviourExample.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking\5.7.0\Examples\Interaction Engine Examples\Common Example Assets\Scripts\SimpleScaleUtil.cs" />
     <Compile Include="Assets\Scripts\DragAndDrop.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking\5.7.0\Examples\Interaction Engine Examples\Common Example Assets\Scripts\SimpleRendererUtil.cs" />
     <Compile Include="Assets\Scripts\FeedbackGame\GoalLogic.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking\5.7.0\Examples\Interaction Engine Examples\6. Dynamic UI\Scripts\SimpleMatchAnchorScaleAndState.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking\5.7.0\Examples\Interaction Engine Examples\7. Moving Reference Frames\Scripts\LinearSpeedTextBehaviour.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking\5.7.0\Examples\Core Examples\Example Assets\ProjectionPostProcessProvider.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking\5.7.0\Examples\Interaction Engine Examples\Common Example Assets\Scripts\SimpleInteractionEmission.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking\5.7.0\Examples\Interaction Engine Examples\7. Moving Reference Frames\Scripts\LinearReferenceSpawner.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking\5.7.0\Examples\Interaction Engine Examples\2. Basic UI\MovePoseExample.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking Preview\5.7.0\Examples\UI Input Examples\Scripts\UI\ScrollRectVolume.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking Preview\5.7.0\Examples\UI Input Examples\Scripts\SoundOverrides.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking Preview\5.7.0\Examples\UI Input Examples\Scripts\UI\ToggleToggler.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking Preview\5.7.0\Examples\UI Input Examples\Scripts\Cursors\SquishyPointer.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking Preview\5.7.0\Examples\UI Input Examples\Scripts\UI\SliderShadow.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking Preview\5.7.0\Examples\UI Input Examples\Scripts\UI\SliderVolume.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking Preview\5.7.0\Examples\UI Input Examples\Scripts\Cursors\ProjectionPointer.cs" />
+    <Compile Include="Assets\Samples\Ultraleap Tracking Preview\5.7.0\Examples\XRControllerSupport\ControllerModelEnableDisable.cs" />
+    <Compile Include="Assets\Scripts\LeapExperimental\PlaybackProvider.cs" />
+    <Compile Include="Assets\Scripts\LeapExperimental\PlaybackRecorder.cs" />
+    <Compile Include="Assets\Scripts\LeapExperimental\Recording.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
@@ -85,6 +124,7 @@
     <None Include="Assets\TextMesh Pro\Shaders\TMPro_Properties.cginc" />
     <None Include="Assets\TextMesh Pro\Shaders\TMPro_Surface.cginc" />
     <None Include="Assets\TextMesh Pro\Resources\LineBreaking Following Characters.txt" />
+    <None Include="Assets\Samples\Ultraleap Tracking\5.7.0\Examples\Hands Examples\Hands (URP)\Shaders\URP_ToonBasicOutline.shader" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Masking.shader" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF Overlay.shader" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap-Mobile.shader" />

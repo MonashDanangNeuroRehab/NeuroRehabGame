@@ -21,7 +21,7 @@ public class GoalLogic : MonoBehaviour
         GameManager.GetComponent<FeedbackGameManager>().goalEncountered = true;
         encounteredTime = Time.realtimeSinceStartup;
         currTime = Time.realtimeSinceStartup;
-        StartCoroutine(TestCoroutine());
+        // StartCoroutine(TestCoroutine());
     }
     // Update is called once per frame
     void Update()

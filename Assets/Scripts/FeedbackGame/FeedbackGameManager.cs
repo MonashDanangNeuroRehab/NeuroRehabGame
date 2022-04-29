@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class FeedbackGameManager : MonoBehaviour
 {
@@ -9,14 +10,19 @@ public class FeedbackGameManager : MonoBehaviour
     private int goalIndex;
     private GameObject nextGoal;
     [SerializeField]
-    private GameObject scoreDisplay;
-    [SerializeField]
     private GameObject bottomWall;
     [SerializeField]
     private GameObject topWall;
     private Vector3 velocity = Vector3.zero;
     private float smoothTime = 1f;
     public bool goalEncountered = false;
+
+    // Score Display
+    [SerializeField]
+    private GameObject gameScore;
+    [SerializeField]
+    private GameObject gameScoreLabel;
+
     private void Awake()
     {
         
@@ -61,5 +67,16 @@ public class FeedbackGameManager : MonoBehaviour
             }
         }
 
+    }
+
+    // Score display
+    void ScoreUpdate(float score)
+    {
+        gameScore.GetComponent<Text>().text = score.ToString("0");
+    }
+    void ToggleScoreDisplay()
+    {
+        gameScore.SetActive(!gameScore.activeInHierarchy);
+        gameScoreLabel.SetActive(!gameScoreLabel.activeInHierarchy);
     }
 }
