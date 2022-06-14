@@ -6,7 +6,7 @@ This research is the collaboration between Monash Universtiy (Australia) and Dan
 ## Funding
 This research is made possible by VESKI Study Melbourne Research Partnership(SMRP)Program
 ![alt text](Images/VeskiLogo.jpeg "Veski")
-![alt text](Images/StudyMelbourneLogo.jpeg "StudyMelbourne")
+![alt text](Images/StudyMelbourneLogo.jpg "StudyMelbourne")
 
 ## What is "Gamification of Stroke Rehabilitation Process"?
 We are gamifying the stroke rehab process to use with a low-cost hand tracking device Ultra LEAP Hand Motion Capture Device.
