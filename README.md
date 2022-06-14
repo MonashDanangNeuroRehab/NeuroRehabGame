@@ -1,17 +1,21 @@
 # Gamification of Stroke Rehabilitation Process 
 ## Collaboration
 This research is the collaboration between Monash Universtiy (Australia) and Danang University of Technology (Vietnam)
-![alt text](Images/MonashLogo.jpg "Monash")  
+![alt text](Images/JointResearchLogo.jpg "JointResearchLogo")  
 
 ## Funding
 This research is made possible by VESKI Study Melbourne Research Partnership(SMRP)Program
-![alt text](Images/VeskiLogo.jpeg "Veski")  
+![alt text](Images/VeskiLogo.jpeg "Veski")
+![alt text](Images/StudyMelbourneLogo.jpeg "StudyMelbourne")
 
 ## What is "Gamification of Stroke Rehabilitation Process"?
 We are gamifying the stroke rehab process to use with a low-cost hand tracking device Ultra LEAP Hand Motion Capture Device.
 ![alt text](Images/IngameScreenshot1.PNG "Ingame 1")  
 The game aims to motivate post-stroke patients to participate in their rehab exercises and provide usefull feedback to both the patients and the occupational therapists
 ![alt text](Images/IngameScreenshot2.PNG "Ingame 2")  
+
+## Where can you find us?
+Youtube Channel: https://www.youtube.com/channel/UCzH4_rI3Y9ANai0K4CqmfKA
 
 ## Requirements
 
