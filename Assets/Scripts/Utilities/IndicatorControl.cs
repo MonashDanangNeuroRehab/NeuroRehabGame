@@ -124,28 +124,28 @@ public class IndicatorControl : MonoBehaviour
             switch (_confirmedIndicator)
             {
                 case FLIP_LEFT:
-                    _flipLeft.position = _flipLeftOrg.TransformPoint(_mag * Mathf.Sin(_speed * _time), 0, 0);
+                    _currIndicator.position = _flipLeftOrg.TransformPoint(_mag * Mathf.Sin(_speed * _time), 0, 0);
                     break;
                 case FLIP_RIGHT:
-                    _flipRight.position = _flipRightOrg.TransformPoint(_mag * Mathf.Sin(_speed * _time), 0, 0);
+                    _currIndicator.position = _flipRightOrg.TransformPoint(_mag * Mathf.Sin(_speed * _time), 0, 0);
                     break;
                 case UP:
-                    _up.position = _upOrg.TransformPoint(_mag * Mathf.Sin(_speed * _time), 0, 0);
+                    _currIndicator.position = _upOrg.TransformPoint(_mag * Mathf.Sin(_speed * _time), 0, 0);
                     break;
                 case DOWN:
-                    _down.position = _downOrg.TransformPoint(_mag * Mathf.Sin(_speed * _time), 0, 0);
+                    _currIndicator.position = _downOrg.TransformPoint(_mag * Mathf.Sin(_speed * _time), 0, 0);
                     break;
                 case INWARD:
-                    _inward.position = _inwardOrg.TransformPoint(_mag * Mathf.Sin(_speed * _time), 0, 0);
+                    _currIndicator.position = _inwardOrg.TransformPoint(_mag * Mathf.Sin(_speed * _time), 0, 0);
                     break;
                 case OUTWARD:
-                    _outward.position = _outwardOrg.TransformPoint(_mag * Mathf.Sin(_speed * _time), 0, 0);
+                    _currIndicator.position = _outwardOrg.TransformPoint(_mag * Mathf.Sin(_speed * _time), 0, 0);
                     break;
                 case LEFT:
-                    _left.position = _leftOrg.TransformPoint(_mag * Mathf.Sin(_speed * _time), 0, 0);
+                    _currIndicator.position = _leftOrg.TransformPoint(_mag * Mathf.Sin(_speed * _time), 0, 0);
                     break;
                 case RIGHT:
-                    _right.position = _rightOrg.TransformPoint(_mag * Mathf.Sin(_speed * _time), 0, 0);
+                    _currIndicator.position = _rightOrg.TransformPoint(_mag * Mathf.Sin(_speed * _time), 0, 0);
                     break;
                 default:
                     break;

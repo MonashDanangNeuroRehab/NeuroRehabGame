@@ -35,6 +35,8 @@ public class RehabMiniGame3 : PostProcessProvider
     public IndicatorControl indicatorControl;
     public GameObject gameName;
     public Text gameNameText;
+    private Color _color0 = new Color(180f / 255f, 57f / 255f, 156f / 255f);
+    private Color _color1 = new Color(251f / 255f, 193f / 255f, 52f / 255f);
 
     // Game variable
     public GameObject calibrationZone;
@@ -52,6 +54,7 @@ public class RehabMiniGame3 : PostProcessProvider
     private float _fistMakingThresholdUpper = 0.5f;
     private float _fistMakingThresholdLower = 0.1f;
     private float _scoreFactor = 1000f;
+    private float _baselinePlayerComparision = 0;
     private List<float> _baseline = new List<float>();
     private List<float> _playerResult = new List<float>();
     private List<float> _baselineSegmented = new List<float>();
@@ -106,7 +109,7 @@ public class RehabMiniGame3 : PostProcessProvider
     {
         var leftHand = inputFrame.Hands.Query().FirstOrDefault(h => h.IsLeft);
         var rightHand = inputFrame.Hands.Query().FirstOrDefault(h => !h.IsLeft);
-        if (Time.inFixedTimeStep)
+        if (Time.inFixedTimeStep && isActiveAndEnabled)
         {
             if (!isGameCleared)
             {
@@ -153,9 +156,9 @@ public class RehabMiniGame3 : PostProcessProvider
                         calibrationZone.SetActive(true);
                         if (HandID == LEFT_HAND)
                         {
-                            // calibrationZone.transform.position = new Vector3(-0.001130388f, 1.095585f, 0.1330335f);
-                            calibrationZone.transform.parent = Camera.main.transform;
-                            calibrationZone.transform.localPosition = new Vector3(-0.001130388f, -0.1696091f, 0.8409942f);
+                            calibrationZone.transform.position = new Vector3(-0.001130388f, 1.095585f, 0.1330335f);
+                            // calibrationZone.transform.parent = Camera.main.transform;
+                            // calibrationZone.transform.localPosition = new Vector3(-0.001130388f, -0.1696091f, 0.8409942f);
                         }
                         else if (HandID == RIGHT_HAND)
                         {
@@ -239,6 +242,7 @@ public class RehabMiniGame3 : PostProcessProvider
                             }
                             playbackProvider.ChooseRecording("EndGame");
                             gameNotifText.text = "Congrats, you finished the mini game. Prepare to move on";
+                            indicatorControl.indicator = IndicatorControl.NO_INDICATOR;
                             isGameCleared = true;
                             if (!standAloneMode)
                             {
@@ -348,8 +352,8 @@ public class RehabMiniGame3 : PostProcessProvider
                         _baselineSegmented.Add(_currBaselineFiltered);
                         _playerResultSegmented.Add(_makingFistProgressFiltered);
                         // Color change here
-                        _outlineColor.r = Mathf.Clamp(Mathf.Abs(_makingFistProgressFilteredSegmented - _currBaselineFiltered) / _maximumDeviation, 0, 1);
-                        leftHandRenderer.material.SetColor("_OutlineColor", _outlineColor);
+                        _baselinePlayerComparision = Mathf.Clamp(Mathf.Abs(_makingFistProgressFilteredSegmented - _currBaselineFiltered) / _maximumDeviation, 0, 1);
+                        leftHandRenderer.material.SetColor("_OutlineColor", Color.Lerp(_color0, _color1, _baselinePlayerComparision));
                     }
                 }
                 else if (HandID == RIGHT_HAND)
@@ -365,7 +369,7 @@ public class RehabMiniGame3 : PostProcessProvider
                     if (HandID == LEFT_HAND)
                     {
                         // Base on colour change
-                        if (_outlineColor.r > 0.5f)
+                        if (_baselinePlayerComparision > 0.5f)
                         {
                             if (_isMakingAFist)
                             {

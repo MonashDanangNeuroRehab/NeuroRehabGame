@@ -98,7 +98,7 @@ public class FeedbackGameManager : MonoBehaviour
                         game1.rightHandRenderer = _rightHandRenderer;
                         game1.HandID = HandID;
                         game1.gameManager = this;
-                        game1.HAND_ACTION_MAX = 2;
+                        game1.HAND_ACTION_MAX = 6;
                         game1.gameName = _gameName;
                         game1.calibrationZone = _calibrationZone;
                         game1.enabled = false;
@@ -117,7 +117,7 @@ public class FeedbackGameManager : MonoBehaviour
                         game2.leftHandRenderer = _leftHandRenderer;
                         game2.rightHandRenderer = _rightHandRenderer;
                         game2.gameManager = this;
-                        game2.HAND_ACTION_MAX = 2;
+                        game2.HAND_ACTION_MAX = 6;
                         game2.gameName = _gameName;
                         game2.calibrationZone = _calibrationZone;
                         game2.enabled = false;
@@ -136,7 +136,7 @@ public class FeedbackGameManager : MonoBehaviour
                         game3.leftHandRenderer = _leftHandRenderer;
                         game3.rightHandRenderer = _rightHandRenderer;
                         game3.gameManager = this;
-                        game3.HAND_ACTION_MAX = 2;
+                        game3.HAND_ACTION_MAX = 6;
                         game3.gameName = _gameName;
                         game3.calibrationZone = _calibrationZone;
                         game3.enabled = false;
@@ -155,7 +155,7 @@ public class FeedbackGameManager : MonoBehaviour
                         game4.leftHandRenderer = _leftHandRenderer;
                         game4.rightHandRenderer = _rightHandRenderer;
                         game4.gameManager = this;
-                        game4.HAND_ACTION_MAX = 2;
+                        game4.HAND_ACTION_MAX = 6;
                         game4.gameName = _gameName;
                         game4.calibrationZone = _calibrationZone;
                         game4.enabled = false;
@@ -240,7 +240,7 @@ public class FeedbackGameManager : MonoBehaviour
                                     game1.rightHandRenderer = _rightHandRenderer;
                                     game1.HandID = HandID;
                                     game1.gameManager = this;
-                                    game1.HAND_ACTION_MAX = 2;
+                                    game1.HAND_ACTION_MAX = 6;
                                     game1.gameName = _gameName;
                                     game1.calibrationZone = _calibrationZone;
                                     game1.enabled = false;
@@ -259,7 +259,7 @@ public class FeedbackGameManager : MonoBehaviour
                                     game2.leftHandRenderer = _leftHandRenderer;
                                     game2.rightHandRenderer = _rightHandRenderer;
                                     game2.gameManager = this;
-                                    game2.HAND_ACTION_MAX = 2;
+                                    game2.HAND_ACTION_MAX = 6;
                                     game2.gameName = _gameName;
                                     game2.calibrationZone = _calibrationZone;
                                     game2.enabled = false;
@@ -278,7 +278,7 @@ public class FeedbackGameManager : MonoBehaviour
                                     game3.leftHandRenderer = _leftHandRenderer;
                                     game3.rightHandRenderer = _rightHandRenderer;
                                     game3.gameManager = this;
-                                    game3.HAND_ACTION_MAX = 2;
+                                    game3.HAND_ACTION_MAX = 6;
                                     game3.gameName = _gameName;
                                     game3.calibrationZone = _calibrationZone;
                                     game3.enabled = false;
@@ -297,7 +297,7 @@ public class FeedbackGameManager : MonoBehaviour
                                     game4.leftHandRenderer = _leftHandRenderer;
                                     game4.rightHandRenderer = _rightHandRenderer;
                                     game4.gameManager = this;
-                                    game4.HAND_ACTION_MAX = 2;
+                                    game4.HAND_ACTION_MAX = 6;
                                     game4.gameName = _gameName;
                                     game4.calibrationZone = _calibrationZone;
                                     game4.enabled = false;

@@ -35,6 +35,8 @@ public class RehabMiniGame1 : PostProcessProvider
     public IndicatorControl indicatorControl;
     public GameObject gameName;
     public Text gameNameText;
+    private Color _color0 = new Color(180f / 255f, 57f / 255f, 156f / 255f);
+    private Color _color1 = new Color(251f / 255f, 193f / 255f, 52f / 255f);
 
     // Game variable
     public GameObject calibrationZone;
@@ -55,6 +57,7 @@ public class RehabMiniGame1 : PostProcessProvider
     private float _angleLowerLimit = 10;
     private float _angleUpperLimit = 145;
     private float _scoreFactor = 100000f;
+    private float _baselinePlayerComparision = 0;
     private List<float> _baseline = new List<float>();
     private List<float> _playerResult = new List<float>();
     private List<float> _baselineSegmented = new List<float>();
@@ -110,7 +113,7 @@ public class RehabMiniGame1 : PostProcessProvider
     {
         var leftHand = inputFrame.Hands.Query().FirstOrDefault(h => h.IsLeft);
         var rightHand = inputFrame.Hands.Query().FirstOrDefault(h => !h.IsLeft);
-        if (Time.inFixedTimeStep)
+        if (Time.inFixedTimeStep && isActiveAndEnabled)
         {
             if (!isGameCleared)
             {
@@ -157,9 +160,9 @@ public class RehabMiniGame1 : PostProcessProvider
                         calibrationZone.SetActive(true);
                         if (HandID == LEFT_HAND)
                         {
-                            // calibrationZone.transform.position = new Vector3(0.08521278f, 1.089156f, 0.1166757f);
-                            calibrationZone.transform.parent = Camera.main.transform;
-                            calibrationZone.transform.localPosition = new Vector3(0.08521278f, -0.1869333f, 0.8380312f);
+                            calibrationZone.transform.position = new Vector3(0.02303664f, 1.090155f, 0.1301741f);
+                            // calibrationZone.transform.parent = Camera.main.transform;
+                            // calibrationZone.transform.localPosition = new Vector3(0.08521278f, -0.1869333f, 0.8380312f);
                         }
                         else if (HandID == RIGHT_HAND)
                         {
@@ -241,6 +244,7 @@ public class RehabMiniGame1 : PostProcessProvider
                             }
                             playbackProvider.ChooseRecording("EndGame");
                             gameNotifText.text = "Congrats, you finished the mini game. Prepare to move on";
+                            indicatorControl.indicator = IndicatorControl.NO_INDICATOR;
                             isGameCleared = true;
                             if (!standAloneMode)
                             {
@@ -351,8 +355,8 @@ public class RehabMiniGame1 : PostProcessProvider
                         _baselineSegmented.Add(_currBaselineFiltered);
                         _playerResultSegmented.Add(_deviationFromInitialSegmentedFiltered);
                         _playerResult.Add(_deviationFromInitialFiltered);
-                        _outlineColor.r = Mathf.Clamp(Mathf.Abs(_deviationFromInitialSegmentedFiltered - _currBaselineFiltered) / _maximumDeviation, 0, 1);
-                        leftHandRenderer.material.SetColor("_OutlineColor", _outlineColor);
+                        _baselinePlayerComparision = Mathf.Clamp(Mathf.Abs(_deviationFromInitialSegmentedFiltered - _currBaselineFiltered) / _maximumDeviation, 0, 1);
+                        leftHandRenderer.material.SetColor("_OutlineColor", Color.Lerp(_color0, _color1, _baselinePlayerComparision));
                         /*
                         if (_outlineColor.r > 0.5f)
                         {
@@ -384,7 +388,7 @@ public class RehabMiniGame1 : PostProcessProvider
                 {
                     if (HandID == LEFT_HAND)
                     {
-                        if (_outlineColor.r > 0.5f)
+                        if (_baselinePlayerComparision > 0.5f)
                         {
                             if (_isPalmUp)
                             {

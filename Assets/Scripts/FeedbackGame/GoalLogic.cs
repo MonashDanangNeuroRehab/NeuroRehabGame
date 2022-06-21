@@ -32,27 +32,27 @@ public class GoalLogic : MonoBehaviour
         
         if (TryGetComponent(out RehabMiniGame1 game1))
         {
-            Debug.Log("Game 1 found");
+            // Debug.Log("Game 1 found");
             game1.enabled = true;
         }
         else if (TryGetComponent(out RehabMiniGame2 game2))
         {
-            Debug.Log("Game 2 found");
+            // Debug.Log("Game 2 found");
             game2.enabled = true;
         }
         else if (TryGetComponent(out RehabMiniGame3 game3))
         {
-            Debug.Log("Game 3 found");
+            // Debug.Log("Game 3 found");
             game3.enabled = true;
         }
         else if (TryGetComponent(out RehabMiniGame4 game4))
         {
-            Debug.Log("Game 4 found");
+            // Debug.Log("Game 4 found");
             game4.enabled = true;
         }
         else if (TryGetComponent(out RehabMiniGame5 game5))
         {
-            Debug.Log("Game 5 found");
+            // Debug.Log("Game 5 found");
             game5.enabled = true;
         }
         
@@ -67,12 +67,12 @@ public class GoalLogic : MonoBehaviour
                 case START_SEQUENCE:
                     _finishedGameTime = Time.realtimeSinceStartup;
                     _finishingStage = CONGRATS_MESSAGE;
-                    Debug.Log("Start Congrats");
+                    // Debug.Log("Start Congrats");
                     break;
                 case CONGRATS_MESSAGE:
                     if (Time.realtimeSinceStartup - _finishedGameTime > 1.0f)
                     {
-                        Debug.Log("Start Collapsing");
+                        // Debug.Log("Start Collapsing");
                         _finishingStage = WAIT_FOR_COLLAPSE;
                         _finishedGameTime = Time.realtimeSinceStartup;
                         if (TryGetComponent(out RehabMiniGame1 game1_1))
@@ -101,7 +101,7 @@ public class GoalLogic : MonoBehaviour
 
                     if (Time.realtimeSinceStartup - _finishedGameTime > 3.0f)
                     {
-                        Debug.Log("Going to Finished");
+                        // Debug.Log("Going to Finished");
                         _finishingStage = FINISHED;
                     }
                     break;
