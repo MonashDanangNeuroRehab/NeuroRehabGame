@@ -112,6 +112,7 @@
     <Compile Include="Assets\Samples\Ultraleap Tracking\5.7.0\Examples\Interaction Engine Examples\Common Example Assets\Scripts\SimpleInteractionEmission.cs" />
     <Compile Include="Assets\Samples\Ultraleap Tracking\5.7.0\Examples\Interaction Engine Examples\7. Moving Reference Frames\Scripts\LinearReferenceSpawner.cs" />
     <Compile Include="Assets\Samples\Ultraleap Tracking\5.7.0\Examples\Interaction Engine Examples\2. Basic UI\MovePoseExample.cs" />
+    <Compile Include="Assets\Western Props\Scripts\Destructible.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
