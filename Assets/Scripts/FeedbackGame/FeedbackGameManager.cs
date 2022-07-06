@@ -37,7 +37,7 @@ public class FeedbackGameManager : MonoBehaviour
 
     public float totalScore = 0;
 
-    private float _speed = 0.001f;
+    private float _speed = 0.01f;
     private bool _newGoalSet = false;
 
     private Camera _mainCamera;
@@ -186,7 +186,7 @@ public class FeedbackGameManager : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         if (gameFinished)
         {
