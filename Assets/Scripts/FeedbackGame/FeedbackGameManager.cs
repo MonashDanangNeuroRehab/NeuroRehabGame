@@ -64,6 +64,7 @@ public class FeedbackGameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        Debug.Log(Application.persistentDataPath);
         _mainCamera = Camera.main;
         // UI Setup
         _scoreText = _canvas.transform.GetChild(0).gameObject;

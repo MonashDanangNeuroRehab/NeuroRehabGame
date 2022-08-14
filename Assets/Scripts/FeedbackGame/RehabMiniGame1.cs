@@ -23,7 +23,6 @@ public class RehabMiniGame1 : PostProcessProvider
     public GameObject totalScore;
     public Text totalScoreText;
     public Leap.Unity.Playback.PlaybackProvider playbackProvider;
-    public FilterData filter;
     private bool _isStatusUpdated = false;
     private WaitForEndOfFrame _waitTime = new WaitForEndOfFrame();
     private string _palmUpNotif = "Please flip your palm up";
@@ -37,6 +36,9 @@ public class RehabMiniGame1 : PostProcessProvider
     public Text gameNameText;
     private Color _color0 = new Color(180f / 255f, 57f / 255f, 156f / 255f);
     private Color _color1 = new Color(251f / 255f, 193f / 255f, 52f / 255f);
+
+    // Filter 
+    public FilterData filter;
 
     // Game variable
     public GameObject calibrationZone;

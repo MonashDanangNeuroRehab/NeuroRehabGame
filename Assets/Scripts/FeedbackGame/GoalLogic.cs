@@ -27,7 +27,7 @@ public class GoalLogic : MonoBehaviour
     {
         GameManager = GameObject.Find("GameManager");
 
-        _obstacle = transform.GetChild(0).gameObject;
+        // _obstacle = transform.GetChild(0).gameObject;
 
     }
 
@@ -36,7 +36,7 @@ public class GoalLogic : MonoBehaviour
         GameManager.GetComponent<FeedbackGameManager>().goalEncountered = true;
         encounteredTime = Time.realtimeSinceStartup;
         _currTime = Time.realtimeSinceStartup;
-        /*
+        
         if (TryGetComponent(out RehabMiniGame1 game1))
         {
             // Debug.Log("Game 1 found");
@@ -62,8 +62,8 @@ public class GoalLogic : MonoBehaviour
             // Debug.Log("Game 5 found");
             game5.enabled = true;
         }
-        */
-        StartCoroutine(TestCoroutine());
+        
+        // StartCoroutine(TestCoroutine());
     }
     private void Update()
     {
@@ -82,9 +82,9 @@ public class GoalLogic : MonoBehaviour
                         // Debug.Log("Start Collapsing");
                         _finishingStage = WAIT_FOR_COLLAPSE;
                         _finishedGameTime = Time.realtimeSinceStartup;
-                        _clone = Instantiate(obstacleDestroyed, transform);
-                        _obstacle.SetActive(false);
-                        /*
+                        // _clone = Instantiate(obstacleDestroyed, transform);
+                        // _obstacle.SetActive(false);
+                        
                         if (TryGetComponent(out RehabMiniGame1 game1_1))
                         {
                             game1_1.gameNotifText.text = "Prepare to move to the next obstacle";
@@ -105,7 +105,7 @@ public class GoalLogic : MonoBehaviour
                         {
                             game5_1.gameNotifText.text = "Prepare to move to the next obstacle";
                         }
-                        */
+                        
                     }
                     break;
                 case WAIT_FOR_COLLAPSE:
@@ -114,13 +114,13 @@ public class GoalLogic : MonoBehaviour
                     {
                         // Debug.Log("Going to Finished");
                         _finishingStage = FINISHED;
-                        _clone.SetActive(false);
+                        // _clone.SetActive(false);
 
                     }
                     break;
                 case FINISHED:
                     gameFinished = false;
-                    /*
+                    
                     if (TryGetComponent(out RehabMiniGame1 game1))
                     {
                         game1.gameNotifText.text = "Moving toward the next goal";
@@ -141,7 +141,7 @@ public class GoalLogic : MonoBehaviour
                     {
                         game5.gameNotifText.text = "Moving toward the next goal";
                     }
-                    */
+                    
                     gameObject.SetActive(false);
                     GameManager.GetComponent<FeedbackGameManager>().goalEncountered = false;
                     _finishingStage = START_SEQUENCE;
