@@ -3,7 +3,23 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
+<<<<<<< Updated upstream
   tags: []
+=======
+  tags:
+  - cookable
+  - CookingStation
+  - Food
+  - AssemblyArea
+  - Plate
+  - BottomBun
+  - Cheese
+  - Lettuce
+  - Burger
+  - Tomato
+  - TopBun
+  - Cuttable
+>>>>>>> Stashed changes
   layers:
   - Default
   - TransparentFX
