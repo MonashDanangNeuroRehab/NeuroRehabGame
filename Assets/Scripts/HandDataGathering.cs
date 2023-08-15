@@ -4,17 +4,15 @@ using System.Collections.Generic;
 using Leap;
 using Leap.Unity;
 using UnityEngine;
+using System.IO;
+using System.Text;
 
 public class HandDataGathering : MonoBehaviour
 {
     public LeapServiceProvider leapServiceProvider;
     private float time;
-    private List<List<float>> thumb = new List<List<float>>();
-    private List<List<float>> index = new List<List<float>>();
-    private List<List<float>> middle = new List<List<float>>();
-    private List<List<float>> ring = new List<List<float>>();
-    private List<List<float>> pinky = new List<List<float>>();
-
+    public List<List<List<float>>> handData = new List<List<List<float>>>(5);
+    private List<List<float>> listOfLists = new List<List<float>>();
     public List<float> staticList = new List<float>(16);
 
     private void OnEnable()
@@ -26,6 +24,13 @@ public class HandDataGathering : MonoBehaviour
         for (int i=0; i<16; i++)
         {
             staticList.Add(0.0f);
+        }
+
+        listOfLists.Add(staticList); // So I can reference
+
+        for (int i=0; i<5; i++)
+        {
+            handData.Add(listOfLists);
         }
     }
     private void OnDisable()
@@ -40,24 +45,43 @@ public class HandDataGathering : MonoBehaviour
         
         time += Time.deltaTime;
         //Use a helpful utility function to get the first hand that matches the Chirality
-        Hand _leftHand = frame.GetHand(Chirality.Left);
         Hand _rightHand = frame.GetHand(Chirality.Right);
 
+        staticList[0] = time;
+
         // Getting all the fingers
-        Finger _rightThumb = _rightHand.GetThumb();
-        Finger _rightIndex = _rightHand.GetIndex();
-        Finger _rightMiddle = _rightHand.GetMiddle();
-        Finger _rightRing = _rightHand.GetRing();
-        Finger _rightPinky = _rightHand.GetPinky();
+        for (int i=0; i<5; i++)
+        {
+            // Get the ith finger
+            Finger _currentFinger = _rightHand.Fingers[i];
+
+            // Get the bone data for this finger
+            for (int j=0; j<4; j++)
+            {
+                staticList[j*3 + 1] = _currentFinger.bones[j].PrevJoint.x; 
+                staticList[j*3 + 2] = _currentFinger.bones[j].PrevJoint.y; 
+                staticList[j*3 + 3] = _currentFinger.bones[j].PrevJoint.z;
+
+                if (i == 3) 
+                {
+                    // Need to get the tip too
+                    staticList[j*4 + 1] = _currentFinger.TipPosition.x; 
+                    staticList[j*4 + 2] = _currentFinger.TipPosition.y; 
+                    staticList[j*4 + 3] = _currentFinger.TipPosition.z;
+                } 
+            }
+
+            /*
+            if (i == 0)
+            {
+                PrintListToConsole(staticList);
+            }
+            */
+            handData[i].Add(staticList);
+        }
+
 
         /*
-        Debug.Log(staticList);
-        
-        staticList[1] = 1.0f;
-        staticList[15] = 1.0f;
-        Debug.Log(staticList);
-        Debug.Log("DONE ASSIGNING");
-        */
         staticList[0] = time;
 
         // THUMB
@@ -146,7 +170,7 @@ public class HandDataGathering : MonoBehaviour
             } 
         }
         pinky.Add(staticList);
-        
+        */
         
         /*
         foreach (Bone bone in _rightthumb.bones)
@@ -162,6 +186,16 @@ public class HandDataGathering : MonoBehaviour
 
         // Getting all of the remaining bones
         */
+    }
+
+    private void OnDestroy()
+    {
+        
+        SaveDataToCSV(handData[0],"thumb");
+        SaveDataToCSV(handData[1],"index");
+        SaveDataToCSV(handData[2],"middle");
+        SaveDataToCSV(handData[3],"ring");
+        SaveDataToCSV(handData[4],"pinky");
     }
 
     void PrintListToConsole(List<float> list)
@@ -182,5 +216,30 @@ public class HandDataGathering : MonoBehaviour
         }
 
         Debug.Log(result);
+    }
+
+    void SaveDataToCSV(List<List<float>> data, string fileName)
+    {
+        StringBuilder csv = new StringBuilder();
+        
+        csv.AppendLine(string.Join(",", new List<string> {"time", "meta_x", "meta_y", "meta_z", "prox_x", "prox_y", "prox_z", "intr_x", "intr_y", "intr_z", "dist_x", "dist_y", "dist_z", "tips_x", "tips_y", "tips_z"}));
+        
+        foreach (List<float> row in data)
+        {
+            csv.AppendLine(string.Join(",", row));
+        }
+
+        string fullFileName = GenerateFileNameWithDate(fileName, "csv");
+
+        string path = "C:/Users/xavie/OneDrive/Documents/University/Mechatronics Units/FYP/Unity Data/" + fullFileName;
+        File.WriteAllText(path, csv.ToString());
+
+        Debug.Log("Data saved to: " + path);
+    }
+
+    public static string GenerateFileNameWithDate(string baseFileName, string extension)
+    {
+        string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+        return $"{timestamp}_{baseFileName}.{extension}";
     }
 }
