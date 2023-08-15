@@ -11,15 +11,24 @@ public class HandDataGathering : MonoBehaviour
 {
     public LeapServiceProvider leapServiceProvider;
     private float time;
-    public List<List<List<float>>> handData = new List<List<List<float>>>(5);
-    private List<List<float>> listOfLists = new List<List<float>>();
-    public List<float> staticList = new List<float>(16);
+    private List<List<float>>[] handData = new List<List<float>>[5];
+    private List<float> staticList = new List<float>(new float[19]);
+    // public List<List<List<float>>> handData = new List<List<List<float>>>(5);
+    // private List<List<float>> listOfLists = new List<List<float>>();
+    //public List<float> staticList = new List<float>(16);
 
     private void OnEnable()
     {
         leapServiceProvider.OnUpdateFrame += OnUpdateFrame;
         time = 0.0f;
 
+        // Initialise the empty array
+        for (int i = 0; i < handData.Length; i++)
+        {
+            handData[i] = new List<List<float>>();
+        }
+
+        /*
         // fill out the array with 0.0s
         for (int i=0; i<16; i++)
         {
@@ -32,6 +41,7 @@ public class HandDataGathering : MonoBehaviour
         {
             handData.Add(listOfLists);
         }
+        */
     }
     private void OnDisable()
     {
@@ -50,10 +60,11 @@ public class HandDataGathering : MonoBehaviour
         staticList[0] = time;
 
         // Getting all the fingers
-        for (int i=0; i<5; i++)
+        for (int i=0; i<handData.Length; i++)
         {
             // Get the ith finger
             Finger _currentFinger = _rightHand.Fingers[i];
+            Arm _currentArm = _rightHand.Arm;
 
             // Get the bone data for this finger
             for (int j=0; j<4; j++)
@@ -71,13 +82,21 @@ public class HandDataGathering : MonoBehaviour
                 } 
             }
 
-            /*
+            staticList[16] = _currentArm.ElbowPosition.x;
+            staticList[17] = _currentArm.ElbowPosition.y;
+            staticList[18] = _currentArm.ElbowPosition.z;
+            
+            /* DEBUGGING
+            Debug.Log($"Current finger number is {i}");
+            PrintListToConsole(staticList);
+
+            
             if (i == 0)
             {
                 PrintListToConsole(staticList);
             }
             */
-            handData[i].Add(staticList);
+            handData[i].Add(new List<float>(staticList));
         }
 
 
@@ -190,7 +209,16 @@ public class HandDataGathering : MonoBehaviour
 
     private void OnDestroy()
     {
-        
+        // Trying to just print out last few rows of one type to see if its the variable or if its the function
+        /*
+        PrintListToConsole(handData[0][0]);
+        PrintListToConsole(handData[0][1]);
+        PrintListToConsole(handData[0][2]);
+        PrintListToConsole(handData[0][3]);
+        PrintListToConsole(handData[0][4]);
+        PrintListToConsole(handData[0][5]);
+        */
+
         SaveDataToCSV(handData[0],"thumb");
         SaveDataToCSV(handData[1],"index");
         SaveDataToCSV(handData[2],"middle");
@@ -222,7 +250,7 @@ public class HandDataGathering : MonoBehaviour
     {
         StringBuilder csv = new StringBuilder();
         
-        csv.AppendLine(string.Join(",", new List<string> {"time", "meta_x", "meta_y", "meta_z", "prox_x", "prox_y", "prox_z", "intr_x", "intr_y", "intr_z", "dist_x", "dist_y", "dist_z", "tips_x", "tips_y", "tips_z"}));
+        csv.AppendLine(string.Join(",", new List<string> {"time", "meta_x", "meta_y", "meta_z", "prox_x", "prox_y", "prox_z", "intr_x", "intr_y", "intr_z", "dist_x", "dist_y", "dist_z", "tips_x", "tips_y", "tips_z", "elbow_x", "elbow_y", "elbow_z"}));
         
         foreach (List<float> row in data)
         {
