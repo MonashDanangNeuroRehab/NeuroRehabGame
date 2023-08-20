@@ -9,40 +9,35 @@ using System.Text;
 
 public class HandDataGathering : MonoBehaviour
 {
+    
     public LeapServiceProvider leapServiceProvider;
     private float time;
-    private List<List<float>>[] handData = new List<List<float>>[5];
-    private List<float> staticList = new List<float>(new float[19]);
-    // public List<List<List<float>>> handData = new List<List<List<float>>>(5);
-    // private List<List<float>> listOfLists = new List<List<float>>();
-    //public List<float> staticList = new List<float>(16);
+    /*
+    private List<List<List<float>>>[] handData = new List<List<List<float>>>[5];
+    private List<float> staticList = new List<float>(new float[4]);
+    */
+    new Vector3 start;
+    new Vector3 endvc;
+    int updateCount;
+
+    public List<float[]>[][] handData = new List<float[]>[5][];
 
     private void OnEnable()
     {
-        leapServiceProvider.OnUpdateFrame += OnUpdateFrame;
-        time = 0.0f;
-
-        // Initialise the empty array
         for (int i = 0; i < handData.Length; i++)
         {
-            handData[i] = new List<List<float>>();
+            handData[i] = new List<float[]>[4];
+            for (int j = 0; j < handData[i].Length; j++)
+            {
+                handData[i][j] = new List<float[]>();
+            }
         }
 
-        /*
-        // fill out the array with 0.0s
-        for (int i=0; i<16; i++)
-        {
-            staticList.Add(0.0f);
-        }
-
-        listOfLists.Add(staticList); // So I can reference
-
-        for (int i=0; i<5; i++)
-        {
-            handData.Add(listOfLists);
-        }
-        */
+        updateCount = 0;
+        leapServiceProvider.OnUpdateFrame += OnUpdateFrame;
+        time = 0.0f;
     }
+
     private void OnDisable()
     {
         leapServiceProvider.OnUpdateFrame -= OnUpdateFrame;
@@ -57,35 +52,31 @@ public class HandDataGathering : MonoBehaviour
         //Use a helpful utility function to get the first hand that matches the Chirality
         Hand _rightHand = frame.GetHand(Chirality.Right);
 
-        staticList[0] = time;
-
         // Getting all the fingers
-        for (int i=0; i<handData.Length; i++)
+        for (int i=0; i<5; i++) // only 5 fingers
         {
             // Get the ith finger
             Finger _currentFinger = _rightHand.Fingers[i];
-            Arm _currentArm = _rightHand.Arm;
 
             // Get the bone data for this finger
-            for (int j=0; j<4; j++)
+            for (int j=0; j<4; j++) // only 4 bones per finger
             {
-                staticList[j*3 + 1] = _currentFinger.bones[j].PrevJoint.x; 
-                staticList[j*3 + 2] = _currentFinger.bones[j].PrevJoint.y; 
-                staticList[j*3 + 3] = _currentFinger.bones[j].PrevJoint.z;
+                float[] staticList = new float[4]; 
+                staticList[0] = time;
+                staticList[1] = _currentFinger.bones[j].PrevJoint.x; 
+                staticList[2] = _currentFinger.bones[j].PrevJoint.y; 
+                staticList[3] = _currentFinger.bones[j].PrevJoint.z;
 
-                if (i == 3) 
-                {
-                    // Need to get the tip too
-                    staticList[j*4 + 1] = _currentFinger.TipPosition.x; 
-                    staticList[j*4 + 2] = _currentFinger.TipPosition.y; 
-                    staticList[j*4 + 3] = _currentFinger.TipPosition.z;
-                } 
+                handData[i][j].Add(staticList);
+                
+                if (updateCount != 0) {
+                    Debug.Log($"Finger {i} bone {j}: ");
+                    string arrayAsString = "[" + string.Join(", ", handData[i][j][updateCount-1]) + "]"; // can try handData[i][j] after
+                    Debug.Log(arrayAsString);
+                    arrayAsString = "[" + string.Join(", ", handData[i][j][updateCount]) + "]"; // can try handData[i][j] after
+                    Debug.Log(arrayAsString);
+                }
             }
-
-            staticList[16] = _currentArm.ElbowPosition.x;
-            staticList[17] = _currentArm.ElbowPosition.y;
-            staticList[18] = _currentArm.ElbowPosition.z;
-            
             /* DEBUGGING
             Debug.Log($"Current finger number is {i}");
             PrintListToConsole(staticList);
@@ -96,116 +87,39 @@ public class HandDataGathering : MonoBehaviour
                 PrintListToConsole(staticList);
             }
             */
-            handData[i].Add(new List<float>(staticList));
         }
 
-
-        /*
-        staticList[0] = time;
-
-        // THUMB
-        for (int i=0; i<4; i++)
-        {
-            staticList[i*3 + 1] = _rightThumb.bones[i].PrevJoint.x; 
-            staticList[i*3 + 2] = _rightThumb.bones[i].PrevJoint.y; 
-            staticList[i*3 + 3] = _rightThumb.bones[i].PrevJoint.z;
-
-            if (i == 3) 
-            {
-                // Need to get the tip too
-                staticList[i*4 + 1] = _rightThumb.TipPosition.x; 
-                staticList[i*4 + 2] = _rightThumb.TipPosition.y; 
-                staticList[i*4 + 3] = _rightThumb.TipPosition.z;
-            } 
-        }
-        thumb.Add(staticList);
-
-        //PrintListToConsole(staticList);
-
-        // INDEX FINGER
-        for (int i=0; i<4; i++)
-        {
-            staticList[i*3 + 1] = _rightIndex.bones[i].PrevJoint.x; 
-            staticList[i*3 + 2] = _rightIndex.bones[i].PrevJoint.y; 
-            staticList[i*3 + 3] = _rightIndex.bones[i].PrevJoint.z;
-
-            if (i == 3) 
-            {
-                // Need to get the tip too
-                staticList[i*4 + 1] = _rightIndex.TipPosition.x; 
-                staticList[i*4 + 2] = _rightIndex.TipPosition.y; 
-                staticList[i*4 + 3] = _rightIndex.TipPosition.z;
-            } 
-        }
-        index.Add(staticList);
-
-        // MIDDLE FINGER
-        for (int i=0; i<4; i++)
-        {
-            staticList[i*3 + 1] = _rightMiddle.bones[i].PrevJoint.x; 
-            staticList[i*3 + 2] = _rightMiddle.bones[i].PrevJoint.y; 
-            staticList[i*3 + 3] = _rightMiddle.bones[i].PrevJoint.z;
-
-            if (i == 3) 
-            {
-                // Need to get the tip too
-                staticList[i*4 + 1] = _rightMiddle.TipPosition.x; 
-                staticList[i*4 + 2] = _rightMiddle.TipPosition.y; 
-                staticList[i*4 + 3] = _rightMiddle.TipPosition.z;
-            } 
-        }
-        middle.Add(staticList);
-
-        // RING FINGER
-        for (int i=0; i<4; i++)
-        {
-            staticList[i*3 + 1] = _rightRing.bones[i].PrevJoint.x; 
-            staticList[i*3 + 2] = _rightRing.bones[i].PrevJoint.y; 
-            staticList[i*3 + 3] = _rightRing.bones[i].PrevJoint.z;
-
-            if (i == 3) 
-            {
-                // Need to get the tip too
-                staticList[i*4 + 1] = _rightRing.TipPosition.x; 
-                staticList[i*4 + 2] = _rightRing.TipPosition.y; 
-                staticList[i*4 + 3] = _rightRing.TipPosition.z;
-            } 
-        }
-        ring.Add(staticList);
-
-        // PINKY FINGER
-        for (int i=0; i<4; i++)
-        {
-            staticList[i*3 + 1] = _rightRing.bones[i].PrevJoint.x; 
-            staticList[i*3 + 2] = _rightRing.bones[i].PrevJoint.y; 
-            staticList[i*3 + 3] = _rightRing.bones[i].PrevJoint.z;
-
-            if (i == 3) 
-            {
-                // Need to get the tip too
-                staticList[i*4 + 1] = _rightRing.TipPosition.x; 
-                staticList[i*4 + 2] = _rightRing.TipPosition.y; 
-                staticList[i*4 + 3] = _rightRing.TipPosition.z;
-            } 
-        }
-        pinky.Add(staticList);
-        */
-        
-        /*
-        foreach (Bone bone in _rightthumb.bones)
-        {
-            
-        }
-
-        Debug.Log("PRINTING RIGHT INDEX FINGER BONE TYPES");
-        foreach (Bone bone in _rightindex.bones)
-        {
-            Debug.Log(bone.Type);
-        }
-
-        // Getting all of the remaining bones
-        */
+        updateCount += 1;
+        // Want to reconstruct the vector for this hand elswhere in view.
+        // To do this, need to use Debug.DrawLine(origin, endPoint, Color.red);
     }
+
+    /*
+
+    private void LateUpdate()
+    {
+        
+        for (int i=0; i<5; i++) // only 5 fingers
+        {
+            start = new Vector3(1,1,1);
+            // Metacarpal bone
+            start = new Vector3(handData[i][0][updateCount][1], handData[i][0][updateCount][2]*2.0f, handData[i][0][updateCount][3]);
+            endvc = new Vector3(handData[i][1][updateCount][1], handData[i][1][updateCount][2], handData[i][1][updateCount][3]);
+            Debug.DrawLine(start = start, endvc = endvc, Color.red);
+
+            // Proximal bone
+            start += new Vector3(handData[i][1][updateCount][1], handData[i][1][updateCount][2]*2.0f, handData[i][1][updateCount][3]);
+            endvc = new Vector3(handData[i][2][updateCount][1], handData[i][2][updateCount][2], handData[i][2][updateCount][3]);
+            Debug.DrawLine(start = start, endvc = endvc, Color.red);
+
+            // Intr bone
+            start += new Vector3(handData[i][2][updateCount][1], handData[i][2][updateCount][2]*2.0f, handData[i][2][updateCount][3]);
+            endvc = new Vector3(handData[i][3][updateCount][1], handData[i][3][updateCount][2], handData[i][3][updateCount][3]);
+            Debug.DrawLine(start = start, endvc = endvc, Color.red);
+        }
+        updateCount += 1;
+    }
+    */
 
     private void OnDestroy()
     {
@@ -217,16 +131,18 @@ public class HandDataGathering : MonoBehaviour
         PrintListToConsole(handData[0][3]);
         PrintListToConsole(handData[0][4]);
         PrintListToConsole(handData[0][5]);
-        */
+        
 
         SaveDataToCSV(handData[0],"thumb");
         SaveDataToCSV(handData[1],"index");
         SaveDataToCSV(handData[2],"middle");
         SaveDataToCSV(handData[3],"ring");
         SaveDataToCSV(handData[4],"pinky");
+        */
     }
 
-    void PrintListToConsole(List<float> list)
+    /* 
+    void PrintListToConsole(float[] list)
     {
         string result = "[";
 
@@ -245,12 +161,13 @@ public class HandDataGathering : MonoBehaviour
 
         Debug.Log(result);
     }
-
+    
+    
     void SaveDataToCSV(List<List<float>> data, string fileName)
     {
         StringBuilder csv = new StringBuilder();
         
-        csv.AppendLine(string.Join(",", new List<string> {"time", "meta_x", "meta_y", "meta_z", "prox_x", "prox_y", "prox_z", "intr_x", "intr_y", "intr_z", "dist_x", "dist_y", "dist_z", "tips_x", "tips_y", "tips_z", "elbow_x", "elbow_y", "elbow_z"}));
+        csv.AppendLine(string.Join(",", new List<string> {"time", "x", "y", "z"}));
         
         foreach (List<float> row in data)
         {
@@ -264,10 +181,12 @@ public class HandDataGathering : MonoBehaviour
 
         Debug.Log("Data saved to: " + path);
     }
+    
 
     public static string GenerateFileNameWithDate(string baseFileName, string extension)
     {
         string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
         return $"{timestamp}_{baseFileName}.{extension}";
     }
+    */
 }
