@@ -6,19 +6,13 @@ using Leap.Unity;
 using UnityEngine;
 using System.IO;
 using System.Text;
+using Newtonsoft.Json;
 
 public class HandDataGathering : MonoBehaviour
 {
     
     public LeapServiceProvider leapServiceProvider;
     private float time;
-    /*
-    private List<List<List<float>>>[] handData = new List<List<List<float>>>[5];
-    private List<float> staticList = new List<float>(new float[4]);
-    */
-    new Vector3 start;
-    new Vector3 endvc;
-    int updateCount;
 
     public List<float[]>[][] handData = new List<float[]>[5][];
 
@@ -33,7 +27,6 @@ public class HandDataGathering : MonoBehaviour
             }
         }
 
-        updateCount = 0;
         leapServiceProvider.OnUpdateFrame += OnUpdateFrame;
         time = 0.0f;
     }
@@ -69,6 +62,7 @@ public class HandDataGathering : MonoBehaviour
 
                 handData[i][j].Add(staticList);
                 
+                /*
                 if (updateCount != 0) {
                     Debug.Log($"Finger {i} bone {j}: ");
                     string arrayAsString = "[" + string.Join(", ", handData[i][j][updateCount-1]) + "]"; // can try handData[i][j] after
@@ -76,6 +70,7 @@ public class HandDataGathering : MonoBehaviour
                     arrayAsString = "[" + string.Join(", ", handData[i][j][updateCount]) + "]"; // can try handData[i][j] after
                     Debug.Log(arrayAsString);
                 }
+                */
             }
             /* DEBUGGING
             Debug.Log($"Current finger number is {i}");
@@ -89,37 +84,40 @@ public class HandDataGathering : MonoBehaviour
             */
         }
 
-        updateCount += 1;
+        // Below is required if we want to print out the data every time its saved to handData
+        // updateCount += 1;
+
         // Want to reconstruct the vector for this hand elswhere in view.
         // To do this, need to use Debug.DrawLine(origin, endPoint, Color.red);
     }
 
-    /*
+    
 
     private void LateUpdate()
     {
-        
+        /*
         for (int i=0; i<5; i++) // only 5 fingers
         {
             start = new Vector3(1,1,1);
             // Metacarpal bone
-            start = new Vector3(handData[i][0][updateCount][1], handData[i][0][updateCount][2]*2.0f, handData[i][0][updateCount][3]);
-            endvc = new Vector3(handData[i][1][updateCount][1], handData[i][1][updateCount][2], handData[i][1][updateCount][3]);
+            start = new Vector3(handData[i][0][drawCount][1], handData[i][0][drawCount][2]*2.0f, handData[i][0][drawCount][3]);
+            endvc = new Vector3(handData[i][1][drawCount][1], handData[i][1][drawCount][2], handData[i][1][drawCount][3]);
             Debug.DrawLine(start = start, endvc = endvc, Color.red);
 
             // Proximal bone
-            start += new Vector3(handData[i][1][updateCount][1], handData[i][1][updateCount][2]*2.0f, handData[i][1][updateCount][3]);
-            endvc = new Vector3(handData[i][2][updateCount][1], handData[i][2][updateCount][2], handData[i][2][updateCount][3]);
+            start += new Vector3(handData[i][1][drawCount][1], handData[i][1][drawCount][2]*2.0f, handData[i][1][drawCount][3]);
+            endvc = new Vector3(handData[i][2][drawCount][1], handData[i][2][drawCount][2], handData[i][2][drawCount][3]);
             Debug.DrawLine(start = start, endvc = endvc, Color.red);
 
             // Intr bone
-            start += new Vector3(handData[i][2][updateCount][1], handData[i][2][updateCount][2]*2.0f, handData[i][2][updateCount][3]);
-            endvc = new Vector3(handData[i][3][updateCount][1], handData[i][3][updateCount][2], handData[i][3][updateCount][3]);
+            start += new Vector3(handData[i][2][drawCount][1], handData[i][2][drawCount][2]*2.0f, handData[i][2][drawCount][3]);
+            endvc = new Vector3(handData[i][3][drawCount][1], handData[i][3][drawCount][2], handData[i][3][drawCount][3]);
             Debug.DrawLine(start = start, endvc = endvc, Color.red);
         }
-        updateCount += 1;
+        drawCount += 1;
+        */
     }
-    */
+    
 
     private void OnDestroy()
     {
@@ -138,7 +136,15 @@ public class HandDataGathering : MonoBehaviour
         SaveDataToCSV(handData[2],"middle");
         SaveDataToCSV(handData[3],"ring");
         SaveDataToCSV(handData[4],"pinky");
+        
+
+        PrintToConsole(handData, 0);
+        PrintToConsole(handData, 1);
+        PrintToConsole(handData, 2);
+        PrintToConsole(handData, 3);
+        PrintToConsole(handData, 4);
         */
+        SaveData(handData);
     }
 
     /* 
@@ -189,4 +195,42 @@ public class HandDataGathering : MonoBehaviour
         return $"{timestamp}_{baseFileName}.{extension}";
     }
     */
+    
+    void PrintToConsole(List<float[]>[][] handData, int fingerNumber)
+    {
+        for (int i=0; i<4; i++)
+        {
+            /* For printing every data point to console - not too useful.
+            for (int j=0;j < handData[fingerNumber][i].Count; j++)
+            {
+                string arrayAsString = "[" + string.Join(", ", handData[fingerNumber][i][j]) + "]"; // can try handData[i][j] after
+                Debug.Log(arrayAsString);
+            }
+            string arrayAsString = "[" + string.Join(", ", handData[fingerNumber][i][updateCount]) + "]"; // can try handData[i][j] after
+            Debug.Log(arrayAsString);
+            */
+            Debug.Log($"Finger {fingerNumber} bone {i}: ");
+            string arrayAsString = "[" + string.Join(", ", handData[fingerNumber][i][10]) + "]"; // can try handData[i][j] after
+            Debug.Log(arrayAsString);
+        }
+    }
+
+    void SaveData(List<float[]>[][] data)
+    {
+        string currentDateTime = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+        string fileName = "handDataRaw_" + currentDateTime + ".json";
+
+        string relativePath = Path.Combine("..", "Data", "Raw");
+        string fullPath = Path.Combine(Application.dataPath, relativePath);
+        
+        // Ensure the "data" directory exists
+        if (!Directory.Exists(fullPath))
+        {
+            Directory.CreateDirectory(fullPath);
+        }
+
+        string serializedData = JsonConvert.SerializeObject(data); 
+        string path = Path.Combine(fullPath, fileName);
+        File.WriteAllText(path, serializedData);
+    }
 }
