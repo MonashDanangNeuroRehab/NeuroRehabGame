@@ -10,10 +10,12 @@ public class CalculateVectors : MonoBehaviour
     public List<float[]>[][] vectors;
 
     public Vector3 baselineVector;
+    public Vector3 parallelVector;
+
+    public List<float> angles;
 
     public List<float[]>[][] LoadData(string fileName)
     {
-        fileName = fileName + ".json";
         string relativePath = Path.Combine("..", "Data", "Raw");
         string fullPath = Path.Combine(Application.dataPath, relativePath);
         string path = Path.Combine(fullPath, fileName);
@@ -65,16 +67,17 @@ public class CalculateVectors : MonoBehaviour
         return vectors;
     }
 
+    /// <summary> 
+    /// Calculates the baseline vector for the inputted vectors array
+    /// </summary>
+    /// <param name="vectors">The vectors matrix that was calculated from the raw data points.</param>
+    /// <param name="baselineFinger">The finger that is to be used as the baseline - 0 is thumb, 4 is pinky. </param>
+    /// <param name="baselineBone">The bone vector which is to be used as the baseline - 0 is meta, 1 is prox, 2 is intr.</param>
+    /// <param name="baselineTime">The time over which the baseline is established (must be a float).</param>
+    /// <returns>A Vector3 - which is the baseline Vector.</returns>
     public Vector3 CalculateBaseLineVector(List<float[]>[][] vectors, int baselineFinger, int baselineBone, float baselineTime = 3.0f)
     {
-        /// <summary> 
-        /// Calculates the baseline vector for the inputted vectors array
-        /// </summary>
-        /// <param name="vectors">The vectors matrix that was calculated from the raw data points.</param>
-        /// <param name="baselineFinger">The finger that is to be used as the baseline - 0 is thumb, 4 is pinky. </param>
-        /// <param name="baselineBone">The bone vector which is to be used as the baseline - 0 is meta, 1 is prox, 2 is intr.</param>
-        /// <param name="baselineTime">The time over which the baseline is established (must be a float).</param>
-        /// <returns>A Vector3 - which is the baseline Vector.</returns>
+        
         int tStep = 0;
 
         // Find average of the 1st, 2nd, 3rd element over the inputted finger and bone. This corresponds to the baselineVector's x, y, z.
@@ -86,10 +89,6 @@ public class CalculateVectors : MonoBehaviour
             tStep++;
         }
         Debug.Log("tStep: " + tStep);
-        // Average the vector (may not be needed?)
-        baselineVector.x = baselineVector.x / tStep;
-        baselineVector.y = baselineVector.y / tStep;
-        baselineVector.z = baselineVector.z / tStep;
 
         // Don't need to divide through - instead I just need to normalise the vector.
         baselineVector.Normalize();
@@ -98,5 +97,46 @@ public class CalculateVectors : MonoBehaviour
         Debug.Log("baselineVector z: " + baselineVector.z);
         
         return baselineVector;
+    }
+
+    /// <summary> 
+    /// Returns the perpendicular vector against the baseline vector. This is actually the vector we consider rotation about
+    /// </summary>
+    /// <param name="handData">The original hand data, containing bone start points.</param>
+    /// <param name="finger1">The finger that is the origin of the parallel vector  - 0 is thumb, 4 is pinky. </param>
+    /// <param name="finger2">The finger that is the end of the parallel vector - 0 is thumb, 4 is pinky. </param>
+    /// <param name="boneNumber">The bone whos based is used for the parallel vector calculation.</param>
+    /// <returns> Vector3 of the Perpendicular Vector.</returns>
+    public Vector3 CalculatePerpendicularVector(List<float[]>[][] handData, int finger1, int finger2, int boneNumber, float baselineTime = 3.0f)
+    {
+        
+        parallelVector = new Vector3(0,0,0);
+        int tStep = 0;
+        
+        // Average the coordinates over the baselineTime
+        while (handData[finger1][boneNumber][tStep][0] < baselineTime)
+        {
+            parallelVector.x += handData[finger2][boneNumber][tStep][1] - handData[finger1][boneNumber][tStep][1];
+            parallelVector.y += handData[finger2][boneNumber][tStep][2] - handData[finger1][boneNumber][tStep][2];
+            parallelVector.z += handData[finger2][boneNumber][tStep][3] - handData[finger1][boneNumber][tStep][3];
+            tStep++;
+        }
+
+        parallelVector.Normalize();
+        return parallelVector;
+    }
+
+    public List<float> CalculateAngles(List<float[]>[][] vectors, int fingerNumber, int boneNumber, Vector3 baselineVector, Vector3 perpendicularVector) 
+    {
+        angles = new List<float>();
+
+        for (int i=0; i<vectors[fingerNumber][boneNumber].Count; i++)
+        {
+            Vector3 vector = new Vector3(vectors[fingerNumber][boneNumber][i][1], vectors[fingerNumber][boneNumber][i][2], vectors[fingerNumber][boneNumber][i][3]);
+            float angle = Vector3.SignedAngle(vector, baselineVector, perpendicularVector);
+            angles.Add(angle);
+        }   
+
+        return angles;
     }
 }

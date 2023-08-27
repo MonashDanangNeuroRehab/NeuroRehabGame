@@ -20,8 +20,13 @@ public class HandDataGathering : MonoBehaviour
     public List<float[]>[][] handData = new List<float[]>[5][];
     public List<float[]>[][] loadedData;
     public List<float[]>[][] calculatedVectors;
+    public List<float> angles;
 
     public Vector3 baselineVector;
+    public Vector3 perpendicularVector;
+    public Vector3 zVector;
+
+    private string fileName;
 
     private void Start()
     {
@@ -151,12 +156,16 @@ public class HandDataGathering : MonoBehaviour
         SaveDataToCSV(handData[4],"pinky");
         */
         // Debug.Log($"Number of timesteps is: " + handData[0][0].Count);
-        // SaveData(handData);
-        loadedData = calculateVectorsScript.LoadData("handDataRaw_20230826_171038");
+        fileName = SaveData(handData);
+        loadedData = calculateVectorsScript.LoadData(fileName);
         // Debug.Log("Final timepoint is: " + loadedData[0][0][loadedData[0][0].Count-1][0]);
         calculatedVectors = calculateVectorsScript.CalculateVectorsMethod(loadedData);
         baselineVector = calculateVectorsScript.CalculateBaseLineVector(calculatedVectors, 1, 0);
+        perpendicularVector = calculateVectorsScript.CalculatePerpendicularVector(loadedData, 1, 2, 0);
+        zVector = Vector3.Cross(baselineVector, perpendicularVector);
+        angles = calculateVectorsScript.CalculateAngles(calculatedVectors, 1, 0, baselineVector, perpendicularVector);
 
+        /*
         PrintToConsole(loadedData, 0);
         PrintVectorToConsole(calculatedVectors, 0);
         PrintToConsole(loadedData, 1);
@@ -167,61 +176,33 @@ public class HandDataGathering : MonoBehaviour
         PrintVectorToConsole(calculatedVectors, 3);
         PrintToConsole(loadedData, 4);
         PrintVectorToConsole(calculatedVectors, 4);
-
         Debug.Log($"Baseline vector is: {baselineVector}");
-        Debug.Log($"Baseline vector's x is: {baselineVector.x}");
-        Debug.Log($"Baseline vector's y is: {baselineVector.y}");
-        Debug.Log($"Baseline vector's z is: {baselineVector.z}");
+        Debug.Log($"Perpendicular vector is: {perpendicularVector}");
+        Debug.Log($"Z vector is: {zVector}");
+        */
+        PrintListToConsole(angles);
+        PrintTimeToConsole(loadedData);
     }
 
-    /* 
-    void PrintListToConsole(float[] list)
+    void PrintListToConsole(List<float> floatList)
     {
-        string result = "[";
-
-        for (int i = 0; i < list.Count; i++)
+        StringBuilder sb = new StringBuilder();
+        sb.Append("[");
+        
+        for (int i = 0; i < floatList.Count; i++)
         {
-            result += list[i].ToString();
+            sb.Append(floatList[i]);
             
-            if (i < list.Count - 1)
+            // Append a comma for all values except the last one
+            if (i < floatList.Count - 1)
             {
-                result += ", ";
-            }
-            else {
-                result += "]";
+                sb.Append(", ");
             }
         }
 
-        Debug.Log(result);
+        sb.Append("]");
+        Debug.Log(sb.ToString());
     }
-    
-    
-    void SaveDataToCSV(List<List<float>> data, string fileName)
-    {
-        StringBuilder csv = new StringBuilder();
-        
-        csv.AppendLine(string.Join(",", new List<string> {"time", "x", "y", "z"}));
-        
-        foreach (List<float> row in data)
-        {
-            csv.AppendLine(string.Join(",", row));
-        }
-
-        string fullFileName = GenerateFileNameWithDate(fileName, "csv");
-
-        string path = "C:/Users/xavie/OneDrive/Documents/University/Mechatronics Units/FYP/Unity Data/" + fullFileName;
-        File.WriteAllText(path, csv.ToString());
-
-        Debug.Log("Data saved to: " + path);
-    }
-    
-
-    public static string GenerateFileNameWithDate(string baseFileName, string extension)
-    {
-        string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-        return $"{timestamp}_{baseFileName}.{extension}";
-    }
-    */
     
     void PrintToConsole(List<float[]>[][] handData, int fingerNumber)
     {
@@ -242,17 +223,38 @@ public class HandDataGathering : MonoBehaviour
         }
     }
 
+    void PrintTimeToConsole(List<float[]>[][] handData)
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.Append("[");
+
+        for (int i=0; i<handData[0][0].Count; i++)
+        {
+            sb.Append(handData[0][0][i][0]);
+            
+            // Append a comma for all values except the last one
+            if (i < handData[0][0].Count - 1)
+            {
+                sb.Append(", ");
+            }
+        }
+
+        sb.Append("]");
+        
+        Debug.Log(sb.ToString());
+    }
+
     void PrintVectorToConsole(List<float[]>[][] vectors, int fingerNumber)
     {
         for (int i=0; i<3; i++)
         {
-            Debug.Log($"Finger {fingerNumber} bone {i}: ");
+            Debug.Log($"Finger {fingerNumber} bone {i} vector: ");
             string arrayAsString = "[" + string.Join(", ", vectors[fingerNumber][i][10]) + "]"; // can try handData[i][j] after
             Debug.Log(arrayAsString);
         }
     }
 
-    void SaveData(List<float[]>[][] data)
+    string SaveData(List<float[]>[][] data)
     {
         string currentDateTime = DateTime.Now.ToString("yyyyMMdd_HHmmss");
         string fileName = "handDataRaw_" + currentDateTime + ".json";
@@ -269,5 +271,7 @@ public class HandDataGathering : MonoBehaviour
         string serializedData = JsonConvert.SerializeObject(data); 
         string path = Path.Combine(fullPath, fileName);
         File.WriteAllText(path, serializedData);
+
+        return fileName;
     }
 }
