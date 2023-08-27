@@ -14,7 +14,19 @@ public class HandDataGathering : MonoBehaviour
     public LeapServiceProvider leapServiceProvider;
     private float time;
 
+    // Get my CalculateVectors sheet.
+    private CalculateVectors calculateVectorsScript;
+
     public List<float[]>[][] handData = new List<float[]>[5][];
+    public List<float[]>[][] loadedData;
+    public List<float[]>[][] calculatedVectors;
+
+    public Vector3 baselineVector;
+
+    private void Start()
+    {
+        calculateVectorsScript = GameObject.Find("VectorGenerator").GetComponent<CalculateVectors>();
+    }
 
     private void OnEnable()
     {
@@ -92,10 +104,10 @@ public class HandDataGathering : MonoBehaviour
     }
 
     
-
+    /*
     private void LateUpdate()
     {
-        /*
+        
         for (int i=0; i<5; i++) // only 5 fingers
         {
             start = new Vector3(1,1,1);
@@ -115,8 +127,9 @@ public class HandDataGathering : MonoBehaviour
             Debug.DrawLine(start = start, endvc = endvc, Color.red);
         }
         drawCount += 1;
-        */
+        
     }
+    */
     
 
     private void OnDestroy()
@@ -136,15 +149,29 @@ public class HandDataGathering : MonoBehaviour
         SaveDataToCSV(handData[2],"middle");
         SaveDataToCSV(handData[3],"ring");
         SaveDataToCSV(handData[4],"pinky");
-        
-
-        PrintToConsole(handData, 0);
-        PrintToConsole(handData, 1);
-        PrintToConsole(handData, 2);
-        PrintToConsole(handData, 3);
-        PrintToConsole(handData, 4);
         */
-        SaveData(handData);
+        // Debug.Log($"Number of timesteps is: " + handData[0][0].Count);
+        // SaveData(handData);
+        loadedData = calculateVectorsScript.LoadData("handDataRaw_20230826_171038");
+        // Debug.Log("Final timepoint is: " + loadedData[0][0][loadedData[0][0].Count-1][0]);
+        calculatedVectors = calculateVectorsScript.CalculateVectorsMethod(loadedData);
+        baselineVector = calculateVectorsScript.CalculateBaseLineVector(calculatedVectors, 1, 0);
+
+        PrintToConsole(loadedData, 0);
+        PrintVectorToConsole(calculatedVectors, 0);
+        PrintToConsole(loadedData, 1);
+        PrintVectorToConsole(calculatedVectors, 1);
+        PrintToConsole(loadedData, 2);
+        PrintVectorToConsole(calculatedVectors, 2);
+        PrintToConsole(loadedData, 3);
+        PrintVectorToConsole(calculatedVectors, 3);
+        PrintToConsole(loadedData, 4);
+        PrintVectorToConsole(calculatedVectors, 4);
+
+        Debug.Log($"Baseline vector is: {baselineVector}");
+        Debug.Log($"Baseline vector's x is: {baselineVector.x}");
+        Debug.Log($"Baseline vector's y is: {baselineVector.y}");
+        Debug.Log($"Baseline vector's z is: {baselineVector.z}");
     }
 
     /* 
@@ -211,6 +238,16 @@ public class HandDataGathering : MonoBehaviour
             */
             Debug.Log($"Finger {fingerNumber} bone {i}: ");
             string arrayAsString = "[" + string.Join(", ", handData[fingerNumber][i][10]) + "]"; // can try handData[i][j] after
+            Debug.Log(arrayAsString);
+        }
+    }
+
+    void PrintVectorToConsole(List<float[]>[][] vectors, int fingerNumber)
+    {
+        for (int i=0; i<3; i++)
+        {
+            Debug.Log($"Finger {fingerNumber} bone {i}: ");
+            string arrayAsString = "[" + string.Join(", ", vectors[fingerNumber][i][10]) + "]"; // can try handData[i][j] after
             Debug.Log(arrayAsString);
         }
     }

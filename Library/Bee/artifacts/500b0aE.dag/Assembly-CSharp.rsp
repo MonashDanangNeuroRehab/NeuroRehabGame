@@ -413,6 +413,7 @@
 "Assets/Scripts/FeedbackGame/RehabMiniGame5.cs"
 "Assets/Scripts/Game1/TargetGame.cs"
 "Assets/Scripts/Game1/TargetLogic.cs"
+"Assets/Scripts/MovementAnalysis/CalculateVectors.cs"
 "Assets/Scripts/MovementAnalysis/GetAngles.cs"
 "Assets/Scripts/MovementAnalysis/HandDataGathering.cs"
 "Assets/Scripts/Playback/PlaybackProvider.cs"
