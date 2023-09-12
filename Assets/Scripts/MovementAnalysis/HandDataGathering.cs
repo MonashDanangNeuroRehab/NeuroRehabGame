@@ -164,7 +164,7 @@ public class HandDataGathering : MonoBehaviour
         perpendicularVector = calculateVectorsScript.CalculatePerpendicularVector(loadedData, 1, 2, 0);
         zVector = Vector3.Cross(baselineVector, perpendicularVector);
         angles = calculateVectorsScript.CalculateAngles(calculatedVectors, 1, 0, baselineVector, perpendicularVector);
-
+        
         /*
         PrintToConsole(loadedData, 0);
         PrintVectorToConsole(calculatedVectors, 0);
