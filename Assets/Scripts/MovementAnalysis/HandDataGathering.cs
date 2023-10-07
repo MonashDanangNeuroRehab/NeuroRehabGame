@@ -16,11 +16,13 @@ public class HandDataGathering : MonoBehaviour
 
     // Get my CalculateVectors sheet.
     private CalculateVectors calculateVectorsScript;
+    private AnalyseMovements analyseMovementsScript;
 
     public List<float[]>[][] handData = new List<float[]>[5][];
     public List<float[]>[][] loadedData;
     public List<float[]>[][] calculatedVectors;
     public List<float> angles;
+    private List<float>[] maxMinAngles;
 
     public Vector3 baselineVector;
     public Vector3 perpendicularVector;
@@ -31,6 +33,7 @@ public class HandDataGathering : MonoBehaviour
     private void Start()
     {
         calculateVectorsScript = GameObject.Find("VectorGenerator").GetComponent<CalculateVectors>();
+        analyseMovementsScript = GameObject.Find("MovementAnalyser").GetComponent<AnalyseMovements>();
     }
 
     private void OnEnable()
@@ -46,11 +49,6 @@ public class HandDataGathering : MonoBehaviour
 
         leapServiceProvider.OnUpdateFrame += OnUpdateFrame;
         time = 0.0f;
-    }
-
-    private void OnDisable()
-    {
-        leapServiceProvider.OnUpdateFrame -= OnUpdateFrame;
     }
 
     void OnUpdateFrame(Frame frame)
@@ -108,53 +106,8 @@ public class HandDataGathering : MonoBehaviour
         // To do this, need to use Debug.DrawLine(origin, endPoint, Color.red);
     }
 
-    
-    /*
-    private void LateUpdate()
+    private void OnDisable()
     {
-        
-        for (int i=0; i<5; i++) // only 5 fingers
-        {
-            start = new Vector3(1,1,1);
-            // Metacarpal bone
-            start = new Vector3(handData[i][0][drawCount][1], handData[i][0][drawCount][2]*2.0f, handData[i][0][drawCount][3]);
-            endvc = new Vector3(handData[i][1][drawCount][1], handData[i][1][drawCount][2], handData[i][1][drawCount][3]);
-            Debug.DrawLine(start = start, endvc = endvc, Color.red);
-
-            // Proximal bone
-            start += new Vector3(handData[i][1][drawCount][1], handData[i][1][drawCount][2]*2.0f, handData[i][1][drawCount][3]);
-            endvc = new Vector3(handData[i][2][drawCount][1], handData[i][2][drawCount][2], handData[i][2][drawCount][3]);
-            Debug.DrawLine(start = start, endvc = endvc, Color.red);
-
-            // Intr bone
-            start += new Vector3(handData[i][2][drawCount][1], handData[i][2][drawCount][2]*2.0f, handData[i][2][drawCount][3]);
-            endvc = new Vector3(handData[i][3][drawCount][1], handData[i][3][drawCount][2], handData[i][3][drawCount][3]);
-            Debug.DrawLine(start = start, endvc = endvc, Color.red);
-        }
-        drawCount += 1;
-        
-    }
-    */
-    
-
-    private void OnDestroy()
-    {
-        // Trying to just print out last few rows of one type to see if its the variable or if its the function
-        /*
-        PrintListToConsole(handData[0][0]);
-        PrintListToConsole(handData[0][1]);
-        PrintListToConsole(handData[0][2]);
-        PrintListToConsole(handData[0][3]);
-        PrintListToConsole(handData[0][4]);
-        PrintListToConsole(handData[0][5]);
-        
-
-        SaveDataToCSV(handData[0],"thumb");
-        SaveDataToCSV(handData[1],"index");
-        SaveDataToCSV(handData[2],"middle");
-        SaveDataToCSV(handData[3],"ring");
-        SaveDataToCSV(handData[4],"pinky");
-        */
         // Debug.Log($"Number of timesteps is: " + handData[0][0].Count);
         fileName = SaveData(handData);
         loadedData = calculateVectorsScript.LoadData(fileName);
@@ -164,24 +117,18 @@ public class HandDataGathering : MonoBehaviour
         perpendicularVector = calculateVectorsScript.CalculatePerpendicularVector(loadedData, 1, 2, 0);
         zVector = Vector3.Cross(baselineVector, perpendicularVector);
         angles = calculateVectorsScript.CalculateAngles(calculatedVectors, 1, 0, baselineVector, perpendicularVector);
-        
+        maxMinAngles = analyseMovementsScript.FindMinMaxes(angles);
+
         /*
-        PrintToConsole(loadedData, 0);
-        PrintVectorToConsole(calculatedVectors, 0);
-        PrintToConsole(loadedData, 1);
-        PrintVectorToConsole(calculatedVectors, 1);
-        PrintToConsole(loadedData, 2);
-        PrintVectorToConsole(calculatedVectors, 2);
-        PrintToConsole(loadedData, 3);
-        PrintVectorToConsole(calculatedVectors, 3);
-        PrintToConsole(loadedData, 4);
-        PrintVectorToConsole(calculatedVectors, 4);
-        Debug.Log($"Baseline vector is: {baselineVector}");
-        Debug.Log($"Perpendicular vector is: {perpendicularVector}");
-        Debug.Log($"Z vector is: {zVector}");
-        */
+        Debug.Log("MINS");
+        PrintListToConsole(maxMinAngles[0]);
+        Debug.Log("MAXES");
+        PrintListToConsole(maxMinAngles[1]);
         PrintListToConsole(angles);
         PrintTimeToConsole(loadedData);
+        */
+
+        leapServiceProvider.OnUpdateFrame -= OnUpdateFrame;
     }
 
     void PrintListToConsole(List<float> floatList)
