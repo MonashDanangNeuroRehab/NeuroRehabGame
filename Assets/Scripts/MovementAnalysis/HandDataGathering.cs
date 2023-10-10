@@ -23,6 +23,7 @@ public class HandDataGathering : MonoBehaviour
     public List<float[]>[][] calculatedVectors;
     public List<float> angles;
     private List<float>[] maxMinAngles;
+    private double smoothnessMeasure;
 
     public Vector3 baselineVector;
     public Vector3 perpendicularVector;
@@ -109,7 +110,7 @@ public class HandDataGathering : MonoBehaviour
     private void OnDisable()
     {
         // Debug.Log($"Number of timesteps is: " + handData[0][0].Count);
-        fileName = SaveData(handData);
+        fileName = SaveRawHandData(handData);
         loadedData = calculateVectorsScript.LoadData(fileName);
         // Debug.Log("Final timepoint is: " + loadedData[0][0][loadedData[0][0].Count-1][0]);
         calculatedVectors = calculateVectorsScript.CalculateVectorsMethod(loadedData);
@@ -118,15 +119,11 @@ public class HandDataGathering : MonoBehaviour
         zVector = Vector3.Cross(baselineVector, perpendicularVector);
         angles = calculateVectorsScript.CalculateAngles(calculatedVectors, 1, 0, baselineVector, perpendicularVector);
         maxMinAngles = analyseMovementsScript.FindMinMaxes(angles);
+        smoothnessMeasure = analyseMovementsScript.EvaluateSmoothness(angles);
 
-        /*
-        Debug.Log("MINS");
-        PrintListToConsole(maxMinAngles[0]);
-        Debug.Log("MAXES");
-        PrintListToConsole(maxMinAngles[1]);
-        PrintListToConsole(angles);
-        PrintTimeToConsole(loadedData);
-        */
+        // Save Data
+        SaveMaxMinAngles(maxMinAngles);
+        SaveSmoothnessMeasure(smoothnessMeasure);
 
         leapServiceProvider.OnUpdateFrame -= OnUpdateFrame;
     }
@@ -201,7 +198,7 @@ public class HandDataGathering : MonoBehaviour
         }
     }
 
-    string SaveData(List<float[]>[][] data)
+    string SaveRawHandData(List<float[]>[][] data)
     {
         string currentDateTime = DateTime.Now.ToString("yyyyMMdd_HHmmss");
         string fileName = "handDataRaw_" + currentDateTime + ".json";
@@ -220,5 +217,62 @@ public class HandDataGathering : MonoBehaviour
         File.WriteAllText(path, serializedData);
 
         return fileName;
+    }
+
+    public string SaveMaxMinAngles(List<float>[] maxMinAngles)
+    {
+        string currentDateTime = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+        string fileName = "maxMinAngles_" + currentDateTime + ".json";
+
+        string relativePath = Path.Combine("..", "Data", "Analysed", "MaxMinAngles");
+        string fullPath = Path.Combine(Application.dataPath, relativePath);
+
+        // Ensure the "data" directory exists
+        if (!Directory.Exists(fullPath))
+        {
+            Directory.CreateDirectory(fullPath);
+        }
+
+        string serializedData = JsonConvert.SerializeObject(maxMinAngles);
+        string path = Path.Combine(fullPath, fileName);
+        File.WriteAllText(path, serializedData);
+
+        return fileName;
+    }
+
+    public void SaveSmoothnessMeasure(double smoothnessMeasure)
+    {
+        string relativePath = Path.Combine("..", "Data", "Analysed", "SmoothnessData.json");
+        string fullPath = Path.Combine(Application.dataPath, relativePath);
+
+        // List to hold the smoothness measures
+        List<double> smoothnessData;
+
+        // Check if the file exists
+        if (File.Exists(fullPath))
+        {
+            // If it exists, load the existing data
+            string existingData = File.ReadAllText(fullPath);
+            smoothnessData = JsonConvert.DeserializeObject<List<double>>(existingData);
+        }
+        else
+        {
+            // If the file doesn't exist, create a new list
+            smoothnessData = new List<double>();
+        }
+
+        // Append the new smoothness measure
+        smoothnessData.Add(smoothnessMeasure);
+
+        // Ensure the "Analysed" directory exists
+        string directoryPath = Path.GetDirectoryName(fullPath);
+        if (!Directory.Exists(directoryPath))
+        {
+            Directory.CreateDirectory(directoryPath);
+        }
+
+        // Save the updated data back to the file
+        string serializedData = JsonConvert.SerializeObject(smoothnessData);
+        File.WriteAllText(fullPath, serializedData);
     }
 }

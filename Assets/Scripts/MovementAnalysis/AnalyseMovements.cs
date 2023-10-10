@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using MathNet.Numerics;
+using MathNet.Numerics.IntegralTransforms;
 
 public class AnalyseMovements : MonoBehaviour
 {
@@ -197,15 +199,68 @@ public class AnalyseMovements : MonoBehaviour
         return angularVelocities;
     }
 
+    // FFT function
+    public (List<double>, List<double>) ComputeFourierTransform(List<float> angularVelocitiesPadded, double samplingRate)
+    {
+        // Convert the list to a complex array
+        var complexData = new Complex32[angularVelocitiesPadded.Count];
+        for (int i = 0; i < angularVelocitiesPadded.Count; i++)
+        {
+            complexData[i] = new Complex32(angularVelocitiesPadded[i], 0.0f);
+        }
+
+        // Compute the Fourier transform
+        Fourier.Forward(complexData, FourierOptions.Default);
+
+        // Get the magnitude for real-valued data and positive frequencies
+        List<double> fourierMag = new List<double>();
+        List<double> freqs = new List<double>();
+
+        int N = angularVelocitiesPadded.Count;
+        double maxFrequency = 5.0; // upper limit for frequency
+        double frequencyResolution = samplingRate / N;
+
+        for (int i = 0; i < N / 2; i++) // Only consider the first half of bins for positive frequencies
+        {
+            double currentFrequency = i * frequencyResolution;
+            if (currentFrequency <= maxFrequency) // Limit to 5Hz
+            {
+                fourierMag.Add(complexData[i].Magnitude);
+                freqs.Add(currentFrequency);
+            }
+        }
+
+        return (fourierMag, freqs);
+    }
+
+    public double ComputeSpectralArcLength(List<double> fourierMagRestricted)
+    {
+        double smoothnessMeasure = 0.0;
+        int len = fourierMagRestricted.Count;
+
+        for (int i = 0; i < len - 1; i++)
+        {
+            smoothnessMeasure -= Math.Sqrt(
+                Math.Pow(1.0 / (len - 1), 2) +
+                Math.Pow(fourierMagRestricted[i + 1] - fourierMagRestricted[i], 2)
+            );
+        }
+
+            return smoothnessMeasure;
+    }
+
+
     /// <summary> 
     /// Uses Spectral Arc-Length on a Fourier Transform to evaluate the smoothness of the inputted angles
     /// </summary>
     /// <param name="angles">A list of floats which are the angles that have been achieved.</param>
     /// <returns>A float, which is the measure of the motion smoothness
-    public float EvaluateSmoothness(List<float> angles)
+    public double EvaluateSmoothness(List<float> angles)
     {
         // Evaluates the angles
-        float timestep = 1.0f / 60.0f;
+        float samplingRate = 60.0f;
+        float timestep = 1.0f / samplingRate;
+        
         int movingAverageParam = 6; // 6 because we have 4.5Hz * 2, so 9Hz to detect up to 4.5Hz. 60FPS therefore 6FPS smoothing
 
         List<float> smoothedAngles = ApplyMovingAverage(angles, movingAverageParam);
@@ -215,12 +270,16 @@ public class AnalyseMovements : MonoBehaviour
 
         // Pad my smoothed angles
         int exponent = (int)Math.Ceiling((Math.Log(angularVelocities.Count) / Math.Log(2.0f)) + 4.0f);
-        int padToNumber = (int)(Math.Pow(2.0f, exponent)
+        int padToNumber = (int)(Math.Pow(2.0f, exponent));
 
-        List<float> paddedAngularVelocities = PadAngularVelocities(angularVelocities, padToNumber)
+        List<float> paddedAngularVelocities = PadAngularVelocities(angularVelocities, padToNumber);
 
+        // Now go through and get the limited fourier transform
+        var (fourierMag, freqs) = ComputeFourierTransform(paddedAngularVelocities, (double)samplingRate);
 
+        double smoothnessMeasure = ComputeSpectralArcLength(fourierMag);
+
+        return smoothnessMeasure;
     }
-
 
 }
