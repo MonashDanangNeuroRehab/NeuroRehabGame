@@ -77,7 +77,6 @@ public class CalculateVectors : MonoBehaviour
     /// <returns>A Vector3 - which is the baseline Vector.</returns>
     public Vector3 CalculateBaseLineVector(List<float[]>[][] vectors, int baselineFinger, int baselineBone, float baselineTime = 3.0f)
     {
-        
         int tStep = 0;
 
         // Find average of the 1st, 2nd, 3rd element over the inputted finger and bone. This corresponds to the baselineVector's x, y, z.
@@ -128,6 +127,8 @@ public class CalculateVectors : MonoBehaviour
 
     public List<float> CalculateAngles(List<float[]>[][] vectors, int fingerNumber, int boneNumber, Vector3 baselineVector, Vector3 perpendicularVector) 
     {
+        Debug.Log("Entered CalculateAngles Script");
+        Debug.Log("Total tsteps is: " + vectors[fingerNumber][boneNumber].Count.ToString());
         angles = new List<float>();
 
         for (int i=0; i<vectors[fingerNumber][boneNumber].Count; i++)
@@ -135,8 +136,8 @@ public class CalculateVectors : MonoBehaviour
             Vector3 vector = new Vector3(vectors[fingerNumber][boneNumber][i][1], vectors[fingerNumber][boneNumber][i][2], vectors[fingerNumber][boneNumber][i][3]);
             float angle = Vector3.SignedAngle(vector, baselineVector, perpendicularVector);
             angles.Add(angle);
-        }   
-
+        }
+        Debug.Log("Done calculating angles");
         return angles;
     }
 }

@@ -22,8 +22,11 @@ public class HandDataGathering : MonoBehaviour
     public List<float[]>[][] loadedData;
     public List<float[]>[][] calculatedVectors;
     public List<float> angles;
+    private string savedAngles;
     private List<float>[] maxMinAngles;
     private double smoothnessMeasure;
+    private string currentDateTime;
+    public List<float> timeStamps;
 
     public Vector3 baselineVector;
     public Vector3 perpendicularVector;
@@ -31,14 +34,11 @@ public class HandDataGathering : MonoBehaviour
 
     private string fileName;
 
-    private void Start()
+    private void OnEnable()
     {
         calculateVectorsScript = GameObject.Find("VectorGenerator").GetComponent<CalculateVectors>();
         analyseMovementsScript = GameObject.Find("MovementAnalyser").GetComponent<AnalyseMovements>();
-    }
 
-    private void OnEnable()
-    {
         for (int i = 0; i < handData.Length; i++)
         {
             handData[i] = new List<float[]>[4];
@@ -52,7 +52,7 @@ public class HandDataGathering : MonoBehaviour
         time = 0.0f;
     }
 
-    void OnUpdateFrame(Frame frame)
+    public void OnUpdateFrame(Frame frame)
     {
         //Get a list of all the hands in the frame and loop through
         //to find the first hand that matches the Chirality
@@ -78,54 +78,58 @@ public class HandDataGathering : MonoBehaviour
 
                 handData[i][j].Add(staticList);
                 
-                /*
-                if (updateCount != 0) {
-                    Debug.Log($"Finger {i} bone {j}: ");
-                    string arrayAsString = "[" + string.Join(", ", handData[i][j][updateCount-1]) + "]"; // can try handData[i][j] after
-                    Debug.Log(arrayAsString);
-                    arrayAsString = "[" + string.Join(", ", handData[i][j][updateCount]) + "]"; // can try handData[i][j] after
-                    Debug.Log(arrayAsString);
-                }
-                */
             }
-            /* DEBUGGING
-            Debug.Log($"Current finger number is {i}");
-            PrintListToConsole(staticList);
-
-            
-            if (i == 0)
-            {
-                PrintListToConsole(staticList);
-            }
-            */
         }
-
-        // Below is required if we want to print out the data every time its saved to handData
-        // updateCount += 1;
-
-        // Want to reconstruct the vector for this hand elswhere in view.
-        // To do this, need to use Debug.DrawLine(origin, endPoint, Color.red);
     }
 
     private void OnDisable()
     {
-        // Debug.Log($"Number of timesteps is: " + handData[0][0].Count);
-        fileName = SaveRawHandData(handData);
-        loadedData = calculateVectorsScript.LoadData(fileName);
-        // Debug.Log("Final timepoint is: " + loadedData[0][0][loadedData[0][0].Count-1][0]);
-        calculatedVectors = calculateVectorsScript.CalculateVectorsMethod(loadedData);
-        baselineVector = calculateVectorsScript.CalculateBaseLineVector(calculatedVectors, 1, 0);
-        perpendicularVector = calculateVectorsScript.CalculatePerpendicularVector(loadedData, 1, 2, 0);
-        zVector = Vector3.Cross(baselineVector, perpendicularVector);
-        angles = calculateVectorsScript.CalculateAngles(calculatedVectors, 1, 0, baselineVector, perpendicularVector);
-        maxMinAngles = analyseMovementsScript.FindMinMaxes(angles);
-        smoothnessMeasure = analyseMovementsScript.EvaluateSmoothness(angles);
-
-        // Save Data
-        SaveMaxMinAngles(maxMinAngles);
-        SaveSmoothnessMeasure(smoothnessMeasure);
+        currentDateTime = DateTime.Now.ToString("yyyyMMdd_HHmmss");
 
         leapServiceProvider.OnUpdateFrame -= OnUpdateFrame;
+
+        //Debug.Log($"Number of timesteps is: " + handData[0][0].Count);
+        Debug.Log("Attempting to save data");
+        fileName = SaveRawHandData(handData, currentDateTime);
+        Debug.Log("Saved raw data");
+
+        timeStamps = GetTimeValues(handData);
+        SaveTimeValues(timeStamps, currentDateTime);
+        Debug.Log("Saved time data");
+
+        // loadedData = calculateVectorsScript.LoadData(fileName);
+        // Debug.Log("Loaded Raw data");
+        // Debug.Log("Final timepoint is: " + loadedData[0][0][loadedData[0][0].Count-1][0]);
+
+        calculatedVectors = calculateVectorsScript.CalculateVectorsMethod(handData);
+        Debug.Log("Calculated Vectors");
+
+        baselineVector = calculateVectorsScript.CalculateBaseLineVector(calculatedVectors, 1, 0);
+        Debug.Log("Found baseline vector");
+
+        perpendicularVector = calculateVectorsScript.CalculatePerpendicularVector(handData, 1, 2, 0);
+        Debug.Log("Found perp vector");
+
+        zVector = Vector3.Cross(baselineVector, perpendicularVector);
+        Debug.Log("Found z vector");
+
+        angles = calculateVectorsScript.CalculateAngles(calculatedVectors, 1, 0, baselineVector, perpendicularVector);
+        Debug.Log("Found Angles");
+
+        savedAngles = SaveAnglesData(angles, currentDateTime);
+        Debug.Log("Saved Angles");
+
+        maxMinAngles = analyseMovementsScript.FindMinMaxes(angles, timeStamps, 15);
+        Debug.Log("Found maxminAngles");
+
+        SaveMaxMinAngles(maxMinAngles, currentDateTime);
+        Debug.Log("Saved maxMin angles");
+
+        smoothnessMeasure = analyseMovementsScript.EvaluateSmoothness(angles, timeStamps);
+        Debug.Log("Found smoothness: " + smoothnessMeasure.ToString());
+
+        SaveSmoothnessMeasure(smoothnessMeasure);
+        Debug.Log("Saved smoothness data");
     }
 
     void PrintListToConsole(List<float> floatList)
@@ -152,15 +156,7 @@ public class HandDataGathering : MonoBehaviour
     {
         for (int i=0; i<4; i++)
         {
-            /* For printing every data point to console - not too useful.
-            for (int j=0;j < handData[fingerNumber][i].Count; j++)
-            {
-                string arrayAsString = "[" + string.Join(", ", handData[fingerNumber][i][j]) + "]"; // can try handData[i][j] after
-                Debug.Log(arrayAsString);
-            }
-            string arrayAsString = "[" + string.Join(", ", handData[fingerNumber][i][updateCount]) + "]"; // can try handData[i][j] after
-            Debug.Log(arrayAsString);
-            */
+
             Debug.Log($"Finger {fingerNumber} bone {i}: ");
             string arrayAsString = "[" + string.Join(", ", handData[fingerNumber][i][10]) + "]"; // can try handData[i][j] after
             Debug.Log(arrayAsString);
@@ -198,9 +194,8 @@ public class HandDataGathering : MonoBehaviour
         }
     }
 
-    string SaveRawHandData(List<float[]>[][] data)
+    string SaveRawHandData(List<float[]>[][] data, string currentDateTime)
     {
-        string currentDateTime = DateTime.Now.ToString("yyyyMMdd_HHmmss");
         string fileName = "handDataRaw_" + currentDateTime + ".json";
 
         string relativePath = Path.Combine("..", "Data", "Raw");
@@ -219,9 +214,28 @@ public class HandDataGathering : MonoBehaviour
         return fileName;
     }
 
-    public string SaveMaxMinAngles(List<float>[] maxMinAngles)
+    string SaveAnglesData(List<float> angles, string currentDateTime)
     {
-        string currentDateTime = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+        string fileName = "Angles_" + currentDateTime + ".json";
+
+        string relativePath = Path.Combine("..", "Data", "Analysed", "Angles" );
+        string fullPath = Path.Combine(Application.dataPath, relativePath);
+
+        // Ensure the "data" directory exists
+        if (!Directory.Exists(fullPath))
+        {
+            Directory.CreateDirectory(fullPath);
+        }
+
+        string serializedData = JsonConvert.SerializeObject(angles);
+        string path = Path.Combine(fullPath, fileName);
+        File.WriteAllText(path, serializedData);
+
+        return fileName;
+    }
+
+    public string SaveMaxMinAngles(List<float>[] maxMinAngles, string currentDateTime)
+    {
         string fileName = "maxMinAngles_" + currentDateTime + ".json";
 
         string relativePath = Path.Combine("..", "Data", "Analysed", "MaxMinAngles");
@@ -275,4 +289,34 @@ public class HandDataGathering : MonoBehaviour
         string serializedData = JsonConvert.SerializeObject(smoothnessData);
         File.WriteAllText(fullPath, serializedData);
     }
+
+    public List<float> GetTimeValues(List<float[]>[][] handData)
+    {
+        List<float> time = new List<float>();
+        for (int i = 0; i < handData[0][0].Count; i++)
+        {
+            time.Add(handData[0][0][i][0]);
+        }
+
+        return time;
+    }
+
+    public void SaveTimeValues(List<float> time, string currentDateTime)
+    {
+        string fileName = "timeStamps_" + currentDateTime + ".json";
+
+        string relativePath = Path.Combine("..", "Data", "Analysed", "Timestamps");
+        string fullPath = Path.Combine(Application.dataPath, relativePath);
+
+        // Ensure the "data" directory exists
+        if (!Directory.Exists(fullPath))
+        {
+            Directory.CreateDirectory(fullPath);
+        }
+
+        string serializedData = JsonConvert.SerializeObject(time);
+        string path = Path.Combine(fullPath, fileName);
+        File.WriteAllText(path, serializedData);
+    }
+
 }

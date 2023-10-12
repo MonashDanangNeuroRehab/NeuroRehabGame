@@ -24,12 +24,14 @@ public class AnalyseMovements : MonoBehaviour
     /// </summary>
     /// <param name="angles">A list of floats which are the angles that have been achieved.</param>
     /// <returns>A 2D List, List<float>[2] - The first list is the time which is the min angles, the latter of which is the max angles
-    public List<float>[] FindMinMaxes(List<float> angles)
+    public List<float>[] FindMinMaxes(List<float> angles, List<float> timeStamps, int tStepThreshold, float baselineTime = 3.0f)
     {
         // Defining a 2D list of floats, with set size of 3 rows, variable amount of columns
-        minMaxAngles = new List<float>[2];
-        minMaxAngles[0] = new List<float>();
-        minMaxAngles[1] = new List<float>();
+        minMaxAngles = new List<float>[4];
+        minMaxAngles[0] = new List<float>(); // min angles
+        minMaxAngles[1] = new List<float>(); // min angle timestamps
+        minMaxAngles[2] = new List<float>(); // max angles
+        minMaxAngles[3] = new List<float>(); // max angle timestamps
 
         // Let it be ambiguous to whether you are starting going up or down in angles
         maxAngle = 0.0f;
@@ -40,32 +42,41 @@ public class AnalyseMovements : MonoBehaviour
         angleCounter = 0;
         initialSearch = 0; // Used in the while loop, which understands whether we start going up or down
         
+        // Only want to start after the hold_time
+        while (timeStamps[initialSearch] < baselineTime)
+        {
+            initialSearch += 1;
+        }
+
         float currentAngle = angles[initialSearch];
+        float currentTimeStamp = timeStamps[initialSearch];
         // Find out whether we start going up or going down
-        while (angleCounter < 10)
+        while (angleCounter < tStepThreshold)
         {
             initialSearch +=1 ; // Want to increment initial search value 
-            if (angles[i] < currentAngle)
+            if (angles[initialSearch] < currentAngle)
             {
                 if (maxSearching) 
                 {
                     angleCounter = 0;
                     minSearching = true;
+                    maxSearching = false;
                 }
                 else
                 {
-                    maxSearching = false;
                     minSearching = true;
                 }
+
                 angleCounter += 1;
             }
 
-            if (angles[i] > currentAngle)
+            if (angles[initialSearch] > currentAngle)
             {
                 if (minSearching) 
                 {
                     angleCounter = 0;
                     maxSearching = true;
+                    minSearching = false;
                 }
                 else 
                 {
@@ -75,21 +86,21 @@ public class AnalyseMovements : MonoBehaviour
                 angleCounter += 1;
             }
 
-            if (angleCounter == 10)
+            if (angleCounter == tStepThreshold)
             {
                 if (maxSearching)
                 {
                     // We are going up to start with
                     maxAngle = currentAngle;
-                    angleCounter = 0;
                 }
                 else if (minSearching)
                 {
                     minAngle = currentAngle;
-                    angleCounter = 0;
                 }
             }
         }
+
+        angleCounter = 0; // reset here
 
         for (int i=initialSearch; i<angles.Count; i++)
         {
@@ -100,15 +111,17 @@ public class AnalyseMovements : MonoBehaviour
                 if (angles[i] <= currentAngle)
                 {
                     currentAngle = angles[i];
+                    currentTimeStamp = timeStamps[i];
                 }
                 else 
                 {
                     // This has gone up when we've been minsearching
                     // Don't update currentAngle, if this happens 10 times we know we bottomed out
                     angleCounter += 1;
-                    if (angleCounter == 10)
+                    if (angleCounter == tStepThreshold)
                     {
                         minMaxAngles[0].Add(currentAngle);
+                        minMaxAngles[1].Add(currentTimeStamp);
                         minSearching = false;
                         maxSearching = true;
                         angleCounter = 0;
@@ -121,13 +134,15 @@ public class AnalyseMovements : MonoBehaviour
                 if (angles[i] >= currentAngle)
                 {
                     currentAngle = angles[i];
+                    currentTimeStamp = timeStamps[i];
                 }
                 else
                 {
                     angleCounter += 1;
-                    if (angleCounter == 10)
+                    if (angleCounter == tStepThreshold)
                     {
-                        minMaxAngles[1].Add(currentAngle);
+                        minMaxAngles[2].Add(currentAngle);
+                        minMaxAngles[3].Add(currentTimeStamp);
                         minSearching = true;
                         maxSearching = false;
                         angleCounter = 0;
@@ -138,17 +153,6 @@ public class AnalyseMovements : MonoBehaviour
         }
 
         return minMaxAngles;
-    }
-
-    public List<float> CalculateAngularVelocities(List<float> angles, float timestep)
-    {
-        List<float> angularVelocities = new List<float>();
-        for (int i = 0; i < angles.Count - 1; i++)
-        {
-            float angularVelocity = (angles[i + 1] - angles[i]) / timestep;
-            angularVelocities.Add(angularVelocity);
-        }
-        return angularVelocities;
     }
 
     public List<float> ApplyMovingAverage(List<float> angles, int movingAverageParam)
@@ -186,6 +190,37 @@ public class AnalyseMovements : MonoBehaviour
         return smoothedAngles;
     }
 
+    public List<float> CalculateAngularVelocities(List<float> smoothedAngles, List<float> timestamps)
+    {
+        List<float> angularVelocities = new List<float>();
+
+        // Ensure that both lists have the same length or else return an empty list
+        if (smoothedAngles.Count != timestamps.Count)
+        {
+            Debug.LogWarning("Smoothed Angles and Time Steps lists do not have the same length.");
+            return angularVelocities;
+        }
+
+        for (int i = 0; i < smoothedAngles.Count - 1; i++)
+        {
+            float deltaAngle = smoothedAngles[i + 1] - smoothedAngles[i];
+            float deltaTime = timestamps[i + 1] - timestamps[i];
+
+            // To avoid division by zero
+            if (deltaTime == 0)
+            {
+                angularVelocities.Add(0);
+            }
+            else
+            {
+                float angularVelocity = deltaAngle / deltaTime;
+                angularVelocities.Add(angularVelocity);
+            }
+        }
+
+        return angularVelocities;
+    }
+
     public List<float> PadAngularVelocities(List<float> angularVelocities, int padToNumber)
     {
         // Check if padding is needed
@@ -217,7 +252,7 @@ public class AnalyseMovements : MonoBehaviour
         List<double> freqs = new List<double>();
 
         int N = angularVelocitiesPadded.Count;
-        double maxFrequency = 5.0; // upper limit for frequency
+        double maxFrequency = 4.5; // upper limit for frequency
         double frequencyResolution = samplingRate / N;
 
         for (int i = 0; i < N / 2; i++) // Only consider the first half of bins for positive frequencies
@@ -255,7 +290,7 @@ public class AnalyseMovements : MonoBehaviour
     /// </summary>
     /// <param name="angles">A list of floats which are the angles that have been achieved.</param>
     /// <returns>A float, which is the measure of the motion smoothness
-    public double EvaluateSmoothness(List<float> angles)
+    public double EvaluateSmoothness(List<float> angles, List<float> timestamps)
     {
         // Evaluates the angles
         float samplingRate = 60.0f;
@@ -266,7 +301,7 @@ public class AnalyseMovements : MonoBehaviour
         List<float> smoothedAngles = ApplyMovingAverage(angles, movingAverageParam);
 
         // Call calculate angular velocities function
-        List<float> angularVelocities = CalculateAngularVelocities(smoothedAngles, timestep);
+        List<float> angularVelocities = CalculateAngularVelocities(smoothedAngles, timestamps);
 
         // Pad my smoothed angles
         int exponent = (int)Math.Ceiling((Math.Log(angularVelocities.Count) / Math.Log(2.0f)) + 4.0f);
@@ -276,6 +311,22 @@ public class AnalyseMovements : MonoBehaviour
 
         // Now go through and get the limited fourier transform
         var (fourierMag, freqs) = ComputeFourierTransform(paddedAngularVelocities, (double)samplingRate);
+
+        // Adjust the fourier mag by by dividing by the mag of the 0th entry
+        Debug.Log("The freq of the 0th entry is: " + freqs[0].ToString());
+        Debug.Log("The fourierMag of the 0th entry is: " + fourierMag[0].ToString());
+        
+        if (fourierMag[0] != 0)
+        {
+            for (int i = 0; i < fourierMag.Count; i++)
+            {
+                fourierMag[i] /= fourierMag[0];
+            }
+        }
+        else
+        {
+            Debug.Log("entry 0 has fourier mag of 0");
+        }
 
         double smoothnessMeasure = ComputeSpectralArcLength(fourierMag);
 

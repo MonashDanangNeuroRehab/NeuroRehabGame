@@ -418,6 +418,7 @@
 "Assets/Scripts/MovementAnalysis/CalculateVectors.cs"
 "Assets/Scripts/MovementAnalysis/HandDataGathering.cs"
 "Assets/Scripts/MovementAnalysis/ObjectDetection.cs"
+"Assets/Scripts/MovementAnalysis/SetFrameRate.cs"
 "Assets/Scripts/Playback/PlaybackProvider.cs"
 "Assets/Scripts/Playback/PlaybackRecorder.cs"
 "Assets/Scripts/Playback/Recording.cs"
