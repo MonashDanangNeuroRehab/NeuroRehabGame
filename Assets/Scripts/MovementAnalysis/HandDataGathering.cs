@@ -17,8 +17,9 @@ public class HandDataGathering : MonoBehaviour
     // Get my CalculateVectors sheet.
     private CalculateVectors calculateVectorsScript;
     private AnalyseMovements analyseMovementsScript;
+    public ExerciseManager exerciseManagerScript;
 
-    public List<float[]>[][] handData = new List<float[]>[5][];
+    public List<float[]>[][] handData;
     public List<float[]>[][] loadedData;
     public List<float[]>[][] calculatedVectors;
     public List<float> angles;
@@ -32,12 +33,22 @@ public class HandDataGathering : MonoBehaviour
     public Vector3 perpendicularVector;
     public Vector3 zVector;
 
+    private string hand;
+    public int baselineFingerNo;
+    public int boneNo;
+    public int nextToFingerNo;
+    public float currentMovementDuration;
+    private Hand _hand;
+
     private string fileName;
 
     private void OnEnable()
     {
+        handData =  new List<float[]>[5][];
         calculateVectorsScript = GameObject.Find("VectorGenerator").GetComponent<CalculateVectors>();
         analyseMovementsScript = GameObject.Find("MovementAnalyser").GetComponent<AnalyseMovements>();
+        exerciseManagerScript = GameObject.Find("ExerciseManager").GetComponent<ExerciseManager>();
+
 
         for (int i = 0; i < handData.Length; i++)
         {
@@ -50,6 +61,12 @@ public class HandDataGathering : MonoBehaviour
 
         leapServiceProvider.OnUpdateFrame += OnUpdateFrame;
         time = 0.0f;
+
+        baselineFingerNo = exerciseManagerScript.baselineFingerNo;
+        boneNo = exerciseManagerScript.boneNo;
+        nextToFingerNo = exerciseManagerScript.nextToFingerNo;
+        currentMovementDuration = exerciseManagerScript.currentSetMovementDuration;
+        hand = exerciseManagerScript.hand;
     }
 
     public void OnUpdateFrame(Frame frame)
@@ -58,26 +75,51 @@ public class HandDataGathering : MonoBehaviour
         //to find the first hand that matches the Chirality
         
         time += Time.deltaTime;
-        //Use a helpful utility function to get the first hand that matches the Chirality
+
+        // Use a helpful utility function to get the first hand that matches the Chirality
         Hand _rightHand = frame.GetHand(Chirality.Right);
+        Hand _leftHand = frame.GetHand(Chirality.Right);
 
-        // Getting all the fingers
-        for (int i=0; i<5; i++) // only 5 fingers
+        if (exerciseManagerScript.hand.ToUpper() == "LEFT")
         {
-            // Get the ith finger
-            Finger _currentFinger = _rightHand.Fingers[i];
-
-            // Get the bone data for this finger
-            for (int j=0; j<4; j++) // only 4 bones per finger
+            // Getting all the fingers
+            for (int i = 0; i < 5; i++) // only 5 fingers
             {
-                float[] staticList = new float[4]; 
-                staticList[0] = time;
-                staticList[1] = _currentFinger.bones[j].PrevJoint.x; 
-                staticList[2] = _currentFinger.bones[j].PrevJoint.y; 
-                staticList[3] = _currentFinger.bones[j].PrevJoint.z;
+                // Get the ith finger
+                Finger _currentFinger = _leftHand.Fingers[i];
 
-                handData[i][j].Add(staticList);
-                
+                // Get the bone data for this finger
+                for (int j = 0; j < 4; j++) // only 4 bones per finger
+                {
+                    float[] staticList = new float[4];
+                    staticList[0] = time;
+                    staticList[1] = _currentFinger.bones[j].PrevJoint.x;
+                    staticList[2] = _currentFinger.bones[j].PrevJoint.y;
+                    staticList[3] = _currentFinger.bones[j].PrevJoint.z;
+
+                    handData[i][j].Add(staticList);
+                }
+            }
+        }
+
+        else
+        {
+            for (int i = 0; i < 5; i++) // only 5 fingers
+            {
+                // Get the ith finger
+                Finger _currentFinger = _rightHand.Fingers[i];
+
+                // Get the bone data for this finger
+                for (int j = 0; j < 4; j++) // only 4 bones per finger
+                {
+                    float[] staticList = new float[4];
+                    staticList[0] = time;
+                    staticList[1] = _currentFinger.bones[j].PrevJoint.x;
+                    staticList[2] = _currentFinger.bones[j].PrevJoint.y;
+                    staticList[3] = _currentFinger.bones[j].PrevJoint.z;
+
+                    handData[i][j].Add(staticList);
+                }
             }
         }
     }
@@ -104,22 +146,22 @@ public class HandDataGathering : MonoBehaviour
         calculatedVectors = calculateVectorsScript.CalculateVectorsMethod(handData);
         Debug.Log("Calculated Vectors");
 
-        baselineVector = calculateVectorsScript.CalculateBaseLineVector(calculatedVectors, 1, 0);
+        baselineVector = calculateVectorsScript.CalculateBaseLineVector(calculatedVectors, baselineFingerNo, boneNo);
         Debug.Log("Found baseline vector");
 
-        perpendicularVector = calculateVectorsScript.CalculatePerpendicularVector(handData, 1, 2, 0);
+        perpendicularVector = calculateVectorsScript.CalculatePerpendicularVector(handData, baselineFingerNo, nextToFingerNo, boneNo);
         Debug.Log("Found perp vector");
 
         zVector = Vector3.Cross(baselineVector, perpendicularVector);
         Debug.Log("Found z vector");
 
-        angles = calculateVectorsScript.CalculateAngles(calculatedVectors, 1, 0, baselineVector, perpendicularVector);
+        angles = calculateVectorsScript.CalculateAngles(calculatedVectors, baselineFingerNo, boneNo, baselineVector, perpendicularVector);
         Debug.Log("Found Angles");
 
         savedAngles = SaveAnglesData(angles, currentDateTime);
         Debug.Log("Saved Angles");
 
-        maxMinAngles = analyseMovementsScript.FindMinMaxes(angles, timeStamps, 15);
+        maxMinAngles = analyseMovementsScript.FindMinMaxes(angles, timeStamps, (int)(currentMovementDuration/2.0 * 60.0));
         Debug.Log("Found maxminAngles");
 
         SaveMaxMinAngles(maxMinAngles, currentDateTime);

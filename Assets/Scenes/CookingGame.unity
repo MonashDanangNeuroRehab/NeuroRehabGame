@@ -139,7 +139,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &44726952
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -152,6 +152,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f64ae76b3d92e694dbf1a034a31125f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ExerciseManager: {fileID: 72125715}
   DetectionCube: {fileID: 158462380}
   HoldStillText: {fileID: 1979421661}
   HandDataGatherer: {fileID: 957213223}
@@ -231,8 +232,9 @@ GameObject:
   m_Component:
   - component: {fileID: 72125717}
   - component: {fileID: 72125716}
+  - component: {fileID: 72125718}
   m_Layer: 0
-  m_Name: GameManager
+  m_Name: ExerciseManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -265,6 +267,39 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &72125718
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 72125715}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02fe3045706ad1842b13abbcaeff96cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObjectDetector: {fileID: 44726951}
+  exerciseJoints:
+  - WRIST
+  exerciseTypes:
+  - EXTENSION/FLEXION
+  exerciseSets: 03000000
+  exerciseSetTimes:
+  - 20
+  exerciseRestTimes:
+  - 5
+  exerciseMovementDurations:
+  - 2
+  exerciseFinished: 0
+  hand: RIGHT
+  doingExercise: 0
+  baselineFingerNo: 0
+  boneNo: 0
+  nextToFingerNo: 0
+  currentSetActivityDuration: 0
+  currentSetRestDuration: 0
+  currentSetMovementDuration: 0
 --- !u!1 &108516654
 GameObject:
   m_ObjectHideFlags: 0
@@ -385,7 +420,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!135 &158462381
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -899,11 +934,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   leapServiceProvider: {fileID: 2046876040}
+  exerciseManagerScript: {fileID: 0}
   angles: []
   timeStamps: []
   baselineVector: {x: 0, y: 0, z: 0}
   perpendicularVector: {x: 0, y: 0, z: 0}
   zVector: {x: 0, y: 0, z: 0}
+  baselineFingerNo: 0
+  boneNo: 0
+  nextToFingerNo: 0
+  currentMovementDuration: 0
 --- !u!4 &957213225
 Transform:
   m_ObjectHideFlags: 0

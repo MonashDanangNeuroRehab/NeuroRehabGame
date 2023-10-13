@@ -87,13 +87,13 @@ public class CalculateVectors : MonoBehaviour
             baselineVector.z += vectors[baselineFinger][baselineBone][tStep][3];
             tStep++;
         }
-        Debug.Log("tStep: " + tStep);
+        // Debug.Log("tStep: " + tStep);
 
         // Don't need to divide through - instead I just need to normalise the vector.
         baselineVector.Normalize();
-        Debug.Log("baselineVector x: " + baselineVector.x);
-        Debug.Log("baselineVector y: " + baselineVector.y);
-        Debug.Log("baselineVector z: " + baselineVector.z);
+        // Debug.Log("baselineVector x: " + baselineVector.x);
+        // Debug.Log("baselineVector y: " + baselineVector.y);
+        // Debug.Log("baselineVector z: " + baselineVector.z);
         
         return baselineVector;
     }
@@ -127,8 +127,8 @@ public class CalculateVectors : MonoBehaviour
 
     public List<float> CalculateAngles(List<float[]>[][] vectors, int fingerNumber, int boneNumber, Vector3 baselineVector, Vector3 perpendicularVector) 
     {
-        Debug.Log("Entered CalculateAngles Script");
-        Debug.Log("Total tsteps is: " + vectors[fingerNumber][boneNumber].Count.ToString());
+        // Debug.Log("Entered CalculateAngles Script");
+        // Debug.Log("Total tsteps is: " + vectors[fingerNumber][boneNumber].Count.ToString());
         angles = new List<float>();
 
         for (int i=0; i<vectors[fingerNumber][boneNumber].Count; i++)
@@ -137,7 +137,7 @@ public class CalculateVectors : MonoBehaviour
             float angle = Vector3.SignedAngle(vector, baselineVector, perpendicularVector);
             angles.Add(angle);
         }
-        Debug.Log("Done calculating angles");
+        // Debug.Log("Done calculating angles");
         return angles;
     }
 }

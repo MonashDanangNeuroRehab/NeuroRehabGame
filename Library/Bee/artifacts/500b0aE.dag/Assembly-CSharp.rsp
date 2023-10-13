@@ -416,6 +416,7 @@
 "Assets/Scripts/Game1/TargetLogic.cs"
 "Assets/Scripts/MovementAnalysis/AnalyseMovements.cs"
 "Assets/Scripts/MovementAnalysis/CalculateVectors.cs"
+"Assets/Scripts/MovementAnalysis/ExerciseManager.cs"
 "Assets/Scripts/MovementAnalysis/HandDataGathering.cs"
 "Assets/Scripts/MovementAnalysis/ObjectDetection.cs"
 "Assets/Scripts/MovementAnalysis/SetFrameRate.cs"

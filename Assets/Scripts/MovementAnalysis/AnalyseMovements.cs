@@ -313,8 +313,8 @@ public class AnalyseMovements : MonoBehaviour
         var (fourierMag, freqs) = ComputeFourierTransform(paddedAngularVelocities, (double)samplingRate);
 
         // Adjust the fourier mag by by dividing by the mag of the 0th entry
-        Debug.Log("The freq of the 0th entry is: " + freqs[0].ToString());
-        Debug.Log("The fourierMag of the 0th entry is: " + fourierMag[0].ToString());
+        // Debug.Log("The freq of the 0th entry is: " + freqs[0].ToString());
+        // Debug.Log("The fourierMag of the 0th entry is: " + fourierMag[0].ToString());
         
         if (fourierMag[0] != 0)
         {
