@@ -22,6 +22,8 @@ public class ExerciseManager : MonoBehaviour
     public float currentSetActivityDuration;
     public float currentSetRestDuration;
     public float currentSetMovementDuration;
+    public string currentJoint;
+    public string currentExerciseType;
 
     ObjectDetection objectDetectionScript;
 
@@ -31,7 +33,7 @@ public class ExerciseManager : MonoBehaviour
     void Start()
     {
         objectDetectionScript = ObjectDetector.GetComponent<ObjectDetection>();
-
+        exerciseFinished = false;
         StartCoroutine(ExerciseRoutine());
     }
 
@@ -51,17 +53,54 @@ public class ExerciseManager : MonoBehaviour
                         boneNo = 0;
                         nextToFingerNo = 2;
                         break;
-                    // Add more joints here...
-                }
-
-                // Exercise type lookup
-                switch (exerciseTypes[exerciseNo].ToUpper())
-                {
-                    case "EXTENSION/FLEXION":
-                        // don't need to actually do anything yet, if I do the other movements I will need to though
+                    // Knuckle Joints
+                    case "INDEX KNUCKLE":
+                        baselineFingerNo = 1;
+                        boneNo = 1;
+                        nextToFingerNo = 2;
+                        break;
+                    case "MIDDLE KNUCKLE":
+                        baselineFingerNo = 2;
+                        boneNo = 1;
+                        nextToFingerNo = 3;
+                        break;
+                    case "RING KNUCKLE":
+                        baselineFingerNo = 3;
+                        boneNo = 1;
+                        nextToFingerNo = 4;
+                        break;
+                    case "PINKY KNUCKLE":
+                        baselineFingerNo = 4;
+                        boneNo = 1;
+                        nextToFingerNo = 3;
+                        break;
+                    //Finger Joints
+                    case "INDEX FINGER":
+                        baselineFingerNo = 1;
+                        boneNo = 2;
+                        nextToFingerNo = 2;
+                        break;
+                    case "MIDDLE FINGER":
+                        baselineFingerNo = 2;
+                        boneNo = 2;
+                        nextToFingerNo = 3;
+                        break;
+                    case "RING FINGER":
+                        baselineFingerNo = 3;
+                        boneNo = 2;
+                        nextToFingerNo = 4;
+                        break;
+                    case "PINKY FINGER":
+                        baselineFingerNo = 4;
+                        boneNo = 2;
+                        nextToFingerNo = 3;
                         break;
                 }
 
+                currentExerciseType = exerciseTypes[exerciseNo];
+                currentJoint = exerciseJoints[exerciseNo];
+                currentSetActivityDuration = exerciseSetTimes[exerciseNo];
+                Debug.Log($"Current activity set duration is: {currentSetActivityDuration}");
                 currentSetActivityDuration = exerciseSetTimes[exerciseNo];
                 Debug.Log($"Current activity set duration is: {currentSetActivityDuration}");
                 currentSetRestDuration = exerciseRestTimes[exerciseNo];

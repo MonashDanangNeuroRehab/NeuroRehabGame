@@ -1,0 +1,9 @@
+- could up the amount of timesteps used in findminmaxangles (not causing a crash after all). 
+	- Could use half the exerciseMovementDuration
+- Modify the CalculateAngles script to be able to do left/right movement too
+	- take in the exercise type and check?
+	- modify how the angle is calculated depending on an if case or some shit above.
+
+NOTES FROM LOOKING OVER THINGS
+- finger joint data bad. Can still get measures, but it's shoddy, and I wouldn't rely on it
+- knuckle joint data is okay, however from comparing to expected max/min from protractor usage from a baseline, it doesn't deal with going up (name of movement) as well. This however is likely less of an important measure, since it's the other way that deals with gripping

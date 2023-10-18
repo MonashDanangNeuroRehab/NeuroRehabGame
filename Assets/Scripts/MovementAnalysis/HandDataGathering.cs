@@ -39,6 +39,7 @@ public class HandDataGathering : MonoBehaviour
     public int nextToFingerNo;
     public float currentMovementDuration;
     private Hand _hand;
+    private string exerciseType;
 
     private string fileName;
 
@@ -63,6 +64,7 @@ public class HandDataGathering : MonoBehaviour
         time = 0.0f;
 
         baselineFingerNo = exerciseManagerScript.baselineFingerNo;
+        exerciseType = exerciseManagerScript.currentExerciseType;
         boneNo = exerciseManagerScript.boneNo;
         nextToFingerNo = exerciseManagerScript.nextToFingerNo;
         currentMovementDuration = exerciseManagerScript.currentSetMovementDuration;
@@ -78,7 +80,7 @@ public class HandDataGathering : MonoBehaviour
 
         // Use a helpful utility function to get the first hand that matches the Chirality
         Hand _rightHand = frame.GetHand(Chirality.Right);
-        Hand _leftHand = frame.GetHand(Chirality.Right);
+        Hand _leftHand = frame.GetHand(Chirality.Left);
 
         if (exerciseManagerScript.hand.ToUpper() == "LEFT")
         {
@@ -131,10 +133,12 @@ public class HandDataGathering : MonoBehaviour
         leapServiceProvider.OnUpdateFrame -= OnUpdateFrame;
 
         //Debug.Log($"Number of timesteps is: " + handData[0][0].Count);
+        // Don't need to save the raw hand data, have historical data to point to, not useful in any way really.
+        /*
         Debug.Log("Attempting to save data");
         fileName = SaveRawHandData(handData, currentDateTime);
         Debug.Log("Saved raw data");
-
+        */
         timeStamps = GetTimeValues(handData);
         SaveTimeValues(timeStamps, currentDateTime);
         Debug.Log("Saved time data");
@@ -155,7 +159,14 @@ public class HandDataGathering : MonoBehaviour
         zVector = Vector3.Cross(baselineVector, perpendicularVector);
         Debug.Log("Found z vector");
 
-        angles = calculateVectorsScript.CalculateAngles(calculatedVectors, baselineFingerNo, boneNo, baselineVector, perpendicularVector);
+        if (exerciseType.ToUpper() == "ADDUCTION/ABDUCTION" || exerciseType.ToUpper() == "ABDUCTION/ADDUCTION")
+        {
+            angles = calculateVectorsScript.CalculateAngles(calculatedVectors, baselineFingerNo, boneNo, baselineVector, zVector);
+        }
+        else // Default is flexion/extension
+        {
+            angles = calculateVectorsScript.CalculateAngles(calculatedVectors, baselineFingerNo, boneNo, baselineVector, perpendicularVector);
+        }
         Debug.Log("Found Angles");
 
         savedAngles = SaveAnglesData(angles, currentDateTime);

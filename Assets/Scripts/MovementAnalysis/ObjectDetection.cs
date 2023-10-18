@@ -9,15 +9,17 @@ public class ObjectDetection : MonoBehaviour
 {
     public GameObject ExerciseManager;
     public GameObject DetectionCube;
-    public GameObject HoldStillText;
     public GameObject HandDataGatherer;
     public GameObject VectorGenerator;
     public GameObject MovementAnalyser;
 
     public LeapServiceProvider leapServiceProvider;
     public TextMeshProUGUI CommandText;
+    public TextMeshProUGUI HoldStillText;
+    public TextMeshProUGUI TimerText;
     private HandDataGathering handDataGatheringScript;
     private ExerciseManager exerciseManagerScript;
+    private Coroutine commandCoroutine;
 
     public float timeObjectEntered;
     public bool recordingData;
@@ -25,6 +27,7 @@ public class ObjectDetection : MonoBehaviour
     public Vector3 palmPos;
     public bool exerciseFinished;
     public string hand;
+    public string currentJoint;
 
     // change every exercise
     public float countDownTimer;
@@ -35,26 +38,45 @@ public class ObjectDetection : MonoBehaviour
     {
         // Activate the DetectionCube at the start
         handDataGatheringScript = HandDataGatherer.GetComponent<HandDataGathering>();
-        exerciseManagerScript = ExerciseManager.GetComponent<ExerciseManager>();
     }
 
     private void OnEnable()
     {
         leapServiceProvider.OnUpdateFrame += OnUpdateFrame;
         DetectionCube.SetActive(true);
-        
+
+        exerciseManagerScript = ExerciseManager.GetComponent<ExerciseManager>();
         exerciseFinished = exerciseManagerScript.exerciseFinished;
         hand = exerciseManagerScript.hand;
         recordingData = false;
         isObjectInside = false;
+        CommandText.text = "Move your hand into the detection sphere";
+        CommandText.gameObject.SetActive(true);
+
+        setupDetector(hand);
+    }
+
+    void setupDetector(string hand)
+    {
+        if (hand.ToUpper() == "LEFT")
+        {
+            // Move over the sphere to the left
+            DetectionCube.transform.position = new Vector3(0.25f, 0.145f, 0.27f);
+        }
+        else
+        {
+            DetectionCube.transform.position = new Vector3(-0.25f, 0.145f, 0.27f);
+        }
     }
 
     void OnUpdateFrame(Frame frame)
     {
+        // Instruct the user to move their hand into detection sphere.
+
         // Get the right hand data - something off with below, doesn't like being in the if else loop?
 
         Hand _rightHand = frame.GetHand(Chirality.Right);
-        Hand _leftHand = frame.GetHand(Chirality.Right);
+        Hand _leftHand = frame.GetHand(Chirality.Left);
         
         if (exerciseManagerScript.hand.ToUpper() == "LEFT")
         {
@@ -66,17 +88,21 @@ public class ObjectDetection : MonoBehaviour
 
                 if (DetectionCube.activeSelf && DetectionCube.GetComponent<Collider>().bounds.Contains(palmPos) && !recordingData)
                 {
+                    CommandText.text = "Hold your hand still";
                     if (!isObjectInside)
                     {
+                        // start the timer
+                        countDownTimer = 4.0f;
+                        TimerText.text = $"{countDownTimer:N1}";
+                        TimerText.gameObject.SetActive(true);
                         isObjectInside = true;
                         timeObjectEntered = Time.time;
-                        HoldStillText.SetActive(true);
+                        HoldStillText.gameObject.SetActive(true);
                     }
 
                     if (isObjectInside && Time.time - timeObjectEntered >= 1)
                     {
                         Debug.Log("Activating other objects AAA");
-                        countDownTimer = exerciseManagerScript.currentSetActivityDuration;
                         recordingData = true;
                         VectorGenerator.SetActive(true);
                         // Debug.Log("Vector Generator Active");
@@ -89,21 +115,20 @@ public class ObjectDetection : MonoBehaviour
 
                         StartCoroutine(ActivateAfterDelay());
                     }
+                    countDownTimer -= Time.deltaTime;
+                    TimerText.text = $"{countDownTimer:N1}";
                 }
-                else
+                else if (DetectionCube.activeSelf && !DetectionCube.GetComponent<Collider>().bounds.Contains(palmPos) && !recordingData)
                 {
-                    if (!recordingData)
-                    {
-                        isObjectInside = false;
-                        HoldStillText.SetActive(false);
-                    }
+                    CommandText.text = "Move your hand into the detection sphere";
+                    TimerText.gameObject.SetActive(false);
                 }
 
-                if (CommandText.gameObject.activeInHierarchy)
+                if (recordingData)
                 {
-                    // add in the time left
+                    // TimerText.gameObject.SetActive(false);
                     countDownTimer -= Time.deltaTime;
-                    CommandText.text = "Wrist up and down: " + countDownTimer.ToString();
+                    TimerText.text = $"{countDownTimer:N1}";
                 }
             }
         }
@@ -118,21 +143,24 @@ public class ObjectDetection : MonoBehaviour
 
                 if (DetectionCube.activeSelf && DetectionCube.GetComponent<Collider>().bounds.Contains(palmPos) && !recordingData)
                 {
-                    Debug.Log("Hand detected in sphere");
+                    CommandText.text = "Hold your hand still";
                     if (!isObjectInside)
                     {
+                        // start the timer
+                        countDownTimer = 4.0f;
+                        TimerText.text = $"{countDownTimer:N1}";
+                        TimerText.gameObject.SetActive(true);
                         isObjectInside = true;
                         timeObjectEntered = Time.time;
-                        HoldStillText.SetActive(true);
+                        HoldStillText.gameObject.SetActive(true);
                     }
 
                     if (isObjectInside && Time.time - timeObjectEntered >= 1)
                     {
-                        Debug.Log("Activating other objects");
-                        countDownTimer = exerciseManagerScript.currentSetActivityDuration;
+                        Debug.Log("Activating other objects AAA");
                         recordingData = true;
                         VectorGenerator.SetActive(true);
-                        //Debug.Log("Vector Generator Active");
+                        // Debug.Log("Vector Generator Active");
 
                         MovementAnalyser.SetActive(true);
                         // Debug.Log("Movement Analyser Active");
@@ -142,21 +170,20 @@ public class ObjectDetection : MonoBehaviour
 
                         StartCoroutine(ActivateAfterDelay());
                     }
+                    countDownTimer -= Time.deltaTime;
+                    TimerText.text = $"{countDownTimer:N1}";
                 }
-                else
+                else if (DetectionCube.activeSelf && !DetectionCube.GetComponent<Collider>().bounds.Contains(palmPos) && !recordingData)
                 {
-                    if (!recordingData)
-                    {
-                        isObjectInside = false;
-                        HoldStillText.SetActive(false);
-                    }
+                    CommandText.text = "Move your hand into the detection sphere";
+                    TimerText.gameObject.SetActive(false);
                 }
 
-                if (CommandText.gameObject.activeInHierarchy)
+                if (recordingData)
                 {
-                    // add in the time left
+                    // TimerText.gameObject.SetActive(false);
                     countDownTimer -= Time.deltaTime;
-                    CommandText.text = "Wrist up and down: " + countDownTimer.ToString();
+                    TimerText.text = $"{countDownTimer:N1}";
                 }
             }
         }
@@ -166,22 +193,52 @@ public class ObjectDetection : MonoBehaviour
     {
         Debug.Log("Start gathering data");
         yield return new WaitForSeconds(3);
-        HoldStillText.SetActive(false);
-        CommandText.gameObject.SetActive(true);
+        commandCoroutine = StartCoroutine(CommandMovements());
+        HoldStillText.gameObject.SetActive(false);
 
+        countDownTimer = exerciseManagerScript.currentSetActivityDuration;
         yield return new WaitForSeconds(exerciseManagerScript.currentSetActivityDuration);
         Debug.Log("Done gathering data");
         HandDataGatherer.SetActive(false);
+        DetectionCube.SetActive(false);
         Debug.Log("Data gatherer off");
+        
+        StopCoroutine(commandCoroutine);
+        CommandText.text = $"Take a {exerciseManagerScript.currentSetRestDuration} second break";
+        countDownTimer = exerciseManagerScript.currentSetRestDuration;
 
         yield return new WaitForSeconds(2); // takes a little bit to do the analysis
-        CommandText.gameObject.SetActive(false);
         VectorGenerator.SetActive(false);
         MovementAnalyser.SetActive(false);
-        DetectionCube.SetActive(false);
+        
 
-        yield return new WaitForSeconds(exerciseManagerScript.currentSetRestDuration);
+        yield return new WaitForSeconds(exerciseManagerScript.currentSetRestDuration - 2.0f);
         recordingData = false;
+        isObjectInside = false;
+        TimerText.gameObject.SetActive(false);
+        CommandText.gameObject.SetActive(false);
         exerciseManagerScript.exerciseFinished = true;
+        leapServiceProvider.OnUpdateFrame -= OnUpdateFrame;
+    }
+
+    IEnumerator CommandMovements()
+    {
+        while (true)
+        {
+            if (exerciseManagerScript.currentExerciseType.ToUpper() == "EXTENSION/FLEXION")
+            {
+                CommandText.text = $"{hand} {exerciseManagerScript.currentJoint} down.";
+                yield return new WaitForSeconds(exerciseManagerScript.currentSetMovementDuration);
+                CommandText.text = $"{hand} {exerciseManagerScript.currentJoint} up.";
+                yield return new WaitForSeconds(exerciseManagerScript.currentSetMovementDuration);
+            }
+            else
+            {
+                CommandText.text = $"{hand} {exerciseManagerScript.currentJoint} left.";
+                yield return new WaitForSeconds(exerciseManagerScript.currentSetMovementDuration);
+                CommandText.text = $"{hand} {exerciseManagerScript.currentJoint} right.";
+                yield return new WaitForSeconds(exerciseManagerScript.currentSetMovementDuration);
+            }
+        }
     }
 }
