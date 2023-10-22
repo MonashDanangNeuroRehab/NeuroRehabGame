@@ -1,5 +1,5 @@
 sceneSetups:
-- path: Assets/Scenes/CookingGame.unity
+- path: Assets/Scenes/ExerciseRoutine.unity
   isLoaded: 1
   isActive: 1
   isSubScene: 0

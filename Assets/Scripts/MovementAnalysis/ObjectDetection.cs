@@ -56,7 +56,7 @@ public class ObjectDetection : MonoBehaviour
         setupDetector(hand);
     }
 
-    void setupDetector(string hand)
+    void setUpDetector(string hand)
     {
         if (hand.ToUpper() == "LEFT")
         {

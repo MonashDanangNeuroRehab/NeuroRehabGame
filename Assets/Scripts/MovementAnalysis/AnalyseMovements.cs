@@ -252,7 +252,7 @@ public class AnalyseMovements : MonoBehaviour
         List<double> freqs = new List<double>();
 
         int N = angularVelocitiesPadded.Count;
-        double maxFrequency = 4.5; // upper limit for frequency
+        double maxFrequency = 7.0; // upper limit for frequency
         double frequencyResolution = samplingRate / N;
 
         for (int i = 0; i < N / 2; i++) // Only consider the first half of bins for positive frequencies
@@ -281,7 +281,7 @@ public class AnalyseMovements : MonoBehaviour
             );
         }
 
-            return smoothnessMeasure;
+        return smoothnessMeasure;
     }
 
 
@@ -296,12 +296,12 @@ public class AnalyseMovements : MonoBehaviour
         float samplingRate = 60.0f;
         float timestep = 1.0f / samplingRate;
         
-        int movingAverageParam = 6; // 6 because we have 4.5Hz * 2, so 9Hz to detect up to 4.5Hz. 60FPS therefore 6FPS smoothing
+        int movingAverageParam = 4; // 6 because we have 7Hz * 2, so 14Hz to detect up to 7Hz. 60FPS therefore 4FPS smoothing
 
-        List<float> smoothedAngles = ApplyMovingAverage(angles, movingAverageParam);
+        // List<float> smoothedAngles = ApplyMovingAverage(angles, movingAverageParam);
 
         // Call calculate angular velocities function
-        List<float> angularVelocities = CalculateAngularVelocities(smoothedAngles, timestamps);
+        List<float> angularVelocities = CalculateAngularVelocities(angles, timestamps);
 
         // Pad my smoothed angles
         int exponent = (int)Math.Ceiling((Math.Log(angularVelocities.Count) / Math.Log(2.0f)) + 4.0f);
