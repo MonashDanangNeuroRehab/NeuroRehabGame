@@ -53,7 +53,7 @@ public class ObjectDetection : MonoBehaviour
         CommandText.text = "Move your hand into the detection sphere";
         CommandText.gameObject.SetActive(true);
 
-        setupDetector(hand);
+        setUpDetector(hand);
     }
 
     void setUpDetector(string hand)

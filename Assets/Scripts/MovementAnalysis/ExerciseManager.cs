@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class ExerciseManager : MonoBehaviour
 {
@@ -12,6 +13,7 @@ public class ExerciseManager : MonoBehaviour
     public List<float> exerciseRestTimes; // Seconds
     public List<float> exerciseMovementDurations; // Seconds
     public bool exerciseFinished;
+    public List<string> hands;
     public string hand;
     public bool doingExercise;
 
@@ -28,6 +30,34 @@ public class ExerciseManager : MonoBehaviour
     ObjectDetection objectDetectionScript;
 
 
+    private void OnEnable()
+    {
+        // Get the data from the table
+        ExerciseData data = FindObjectOfType<ExerciseData>();
+
+        // Get the string objects first, no conversion needed
+        hands = data.Hand;
+        exerciseJoints = data.Joint;
+        exerciseTypes = data.ExerciseType;
+
+        // Do the conversion for the other ones
+        for (int i = 0; i < data.NoSets.Count; i++)
+        {
+            if (data.NoSets[i] != null)
+            {
+                // still have some data to get. Get the data
+                exerciseSets.Add(int.Parse(data.NoSets[i]));
+                exerciseSetTimes.Add(float.Parse(data.SetDuration[i]));
+                exerciseRestTimes.Add(float.Parse(data.SetRestTime[i]));
+                exerciseMovementDurations.Add(float.Parse(data.MotionDuration[i]));
+            }
+            else
+            {
+                break;
+            }
+                
+        }
+    }
 
     // Start is called before the first frame update
     void Start()
@@ -39,10 +69,10 @@ public class ExerciseManager : MonoBehaviour
 
     private IEnumerator ExerciseRoutine()
     {
-        if (exerciseJoints.Count > 0)
+        if (exerciseSets.Count > 0)
         {
 
-            for (int exerciseNo = 0; exerciseNo < exerciseJoints.Count; exerciseNo += 1)
+            for (int exerciseNo = 0; exerciseNo < exerciseSets.Count; exerciseNo += 1)
             {
                 Debug.Log("Exercise No: " + exerciseNo.ToString());
                 // Perform a lookup of the joint
@@ -96,7 +126,7 @@ public class ExerciseManager : MonoBehaviour
                         nextToFingerNo = 3;
                         break;
                 }
-
+                hand = hands[exerciseNo];
                 currentExerciseType = exerciseTypes[exerciseNo];
                 currentJoint = exerciseJoints[exerciseNo];
                 currentSetActivityDuration = exerciseSetTimes[exerciseNo];
@@ -118,8 +148,6 @@ public class ExerciseManager : MonoBehaviour
 
                     ObjectDetector.SetActive(true);
                     Debug.Log("Set the object detector ON");
-
-                    
                     
                     while (!exerciseFinished)
                     {
@@ -131,6 +159,9 @@ public class ExerciseManager : MonoBehaviour
                 }
             }
         }
+
+        // exercises finished, go back to main menu now
+        SceneManager.LoadScene(0);
     }
 
 }
