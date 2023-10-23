@@ -431,6 +431,7 @@
 "Assets/Scripts/UI/ExerciseData.cs"
 "Assets/Scripts/UI/MainMenuManager.cs"
 "Assets/Scripts/UI/OrderDisplayScript.cs"
+"Assets/Scripts/UI/StoreExerciseData.cs"
 "Assets/Scripts/Utilities/DragAndDrop.cs"
 "Assets/Scripts/Utilities/ErrorQuantifier.cs"
 "Assets/Scripts/Utilities/FilterData.cs"

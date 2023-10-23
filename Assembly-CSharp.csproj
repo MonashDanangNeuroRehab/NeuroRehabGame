@@ -73,6 +73,7 @@
     <Compile Include="Assets\Samples\Ultraleap Tracking\5.7.0\Examples\Interaction Engine Examples\7. Moving Reference Frames\Scripts\AngularSpeedTextBehaviour.cs" />
     <Compile Include="Assets\Scripts\MovementAnalysis\ExerciseManager.cs" />
     <Compile Include="Assets\Scripts\Utilities\Socket.cs" />
+    <Compile Include="Assets\Scripts\UI\StoreExerciseData.cs" />
     <Compile Include="Assets\Scripts\FeedbackGame\RehabMiniGame4.cs" />
     <Compile Include="Assets\Scripts\Cooking\DragWithMouse.cs" />
     <Compile Include="Assets\Scripts\MovementAnalysis\SetFrameRate.cs" />

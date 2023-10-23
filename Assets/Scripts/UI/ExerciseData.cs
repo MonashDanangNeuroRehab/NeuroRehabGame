@@ -22,15 +22,26 @@ public class ExerciseData : MonoBehaviour
 
     public void StoreTableData()
     {
-        for (int i = 1; i < 6; i++)
+        for (int i = 1; i <= 6; i++)
         {
-            Hand.Add(Table.transform.Find("ColHand").GetChild(i).GetComponent<InputField>().text);
-            Joint.Add(Table.transform.Find("ColJoint").GetChild(i).GetComponent<InputField>().text);
-            ExerciseType.Add(Table.transform.Find("ColExerciseType").GetChild(i).GetComponent<InputField>().text);
-            NoSets.Add(Table.transform.Find("ColNoSets").GetChild(i).GetComponent<InputField>().text);
-            SetDuration.Add(Table.transform.Find("ColSetDur").GetChild(i).GetComponent<InputField>().text);
-            MotionDuration.Add(Table.transform.Find("ColMotionDur").GetChild(i).GetComponent<InputField>().text);
-            SetRestTime.Add(Table.transform.Find("ColRestDur").GetChild(i).GetComponent<InputField>().text);
+            Hand.Add(GetInputFieldText($"ColHand/row{i}"));
+            Joint.Add(GetInputFieldText($"ColJoint/row{i}"));
+            ExerciseType.Add(GetInputFieldText($"ColExerciseType/row{i}"));
+            NoSets.Add(GetInputFieldText($"ColNoSets/row{i}"));
+            SetDuration.Add(GetInputFieldText($"ColSetDur/row{i}"));
+            MotionDuration.Add(GetInputFieldText($"ColMotionDur/row{i}"));
+            SetRestTime.Add(GetInputFieldText($"ColRestDur/row{i}"));
         }
+    }
+
+    private string GetInputFieldText(string path)
+    {
+        InputField inputField = Table.transform.Find(path).GetComponent<InputField>();
+        if (inputField != null)
+        {
+            return inputField.text;
+        }
+        Debug.LogError($"InputField not found at path: {path}");
+        return "";
     }
 }
